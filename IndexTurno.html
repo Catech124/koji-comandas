@@ -565,7 +565,9 @@ main{flex:1 1 auto;min-height:0;position:relative}
   .mesa-titulo .v{font-size:18px}
   .mesa-barra .oculto-m{display:none}
   .mesa-grid{grid-template-columns:1fr;display:block;overflow-y:auto;padding-bottom:60px}
-  .carta-pane{min-height:calc(100dvh - 104px)}
+  .carta-pane{min-height:0}
+  .cats{position:sticky;top:0;z-index:5}
+  .platillos{overflow:visible;padding-bottom:20px}
   .cats{grid-template-columns:repeat(3,1fr)}
   .cats button{height:40px;border-bottom:1px solid var(--line)}
   .plato{grid-template-columns:minmax(0,1fr) 40px 64px 38px;padding:10px 12px}
@@ -1650,7 +1652,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
   });
 
   document.addEventListener('input', function (e) {
-    if (e.target.id === 'q') { A.q = e.target.value; pintarPlatillos(); return; }
+    if (e.target.id === 'q') { A.q = e.target.value; pintarCats(); pintarPlatillos(); return; }
     var ta = e.target.closest('[data-nota]');
     if (ta) {
       A.carrito.forEach(function (x) { if (x.uid === ta.getAttribute('data-nota')) x.nota = ta.value; });
