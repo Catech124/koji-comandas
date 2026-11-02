@@ -129,8 +129,15 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .btn.mini{height:28px;padding:0 9px;font-size:11px}
 
 .piso-cuerpo{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 328px}
-.plano{min-height:0;overflow-y:auto;padding:16px 18px 20px;display:grid;grid-template-columns:1.25fr 1fr;gap:14px;align-content:start}
-.zona{border:1px solid var(--line-2);position:relative;padding:20px 12px 12px;background:oklch(1 0 0 / .45)}
+.plano{min-height:0;height:100%;overflow-y:auto;padding:16px 18px 18px;display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:1.1fr 1.1fr .8fr;gap:14px}
+.zona{border:1px solid var(--line-2);position:relative;padding:20px 12px 12px;background:oklch(1 0 0 / .45);display:flex;flex-direction:column;min-height:0}
+.zona::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(oklch(0.235 0.022 255 / .055) 1px,transparent 1px),
+                   linear-gradient(90deg,oklch(0.235 0.022 255 / .055) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+.zona > *{position:relative;z-index:1}
 .zona-cab{
   position:absolute;top:-8px;left:12px;display:flex;align-items:baseline;gap:8px;
   background:var(--bg);padding:0 7px;
@@ -140,9 +147,9 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .zona.salon{grid-column:1;grid-row:1 / span 2}
 .zona.barra{grid-column:1;grid-row:3}
 .zona.terraza{grid-column:2;grid-row:1 / span 3}
-.mapa{display:grid;gap:8px}
+.mapa{display:grid;gap:14px;flex:1 1 auto;align-content:space-evenly;justify-items:stretch}
 .mapa.m-salon{grid-template-columns:repeat(3,1fr)}
-.mapa.m-terraza{grid-template-columns:repeat(4,1fr)}
+.mapa.m-terraza{grid-template-columns:repeat(2,1fr)}
 .mapa.m-barra{grid-template-columns:repeat(4,72px);justify-content:space-around;padding-top:14px;position:relative}
 /* barra: la línea del mostrador */
 .mapa.m-barra::before{
@@ -165,7 +172,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .mesa-t .tot{font-family:var(--mono);font-size:9.5px;color:var(--ink-2);line-height:1.2}
 .mesa-t.t2{border-radius:50%;min-height:78px;max-width:78px;justify-self:center;width:100%}
 .mesa-t.t6{grid-column:span 2}
-.mesa-t.t-bar{border-radius:0 0 50% 50% / 0 0 34% 34%;min-height:58px}
+.mesa-t.t-bar{border-radius:50%;min-height:64px;max-width:72px;justify-self:center;width:100%}
 .mesa-t[data-estado="captura"]{background:var(--yellow);border-color:var(--ink)}
 .mesa-t[data-estado="captura"] .est{color:oklch(0.35 0.05 95)}
 .mesa-t[data-estado="cuenta"]{border:2px solid var(--blue);background:var(--blue-soft);padding:3px 3px 5px}
@@ -200,6 +207,11 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .slip .d.late{color:var(--red)}
 .slip .t{grid-area:t;font-family:var(--mono);font-size:12px;font-weight:500;text-align:right}
 .cola-pie{flex:0 0 auto;border-top:1px solid var(--line);padding:10px 12px}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 14px;padding:0 2px 10px;font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.leyenda span{display:flex;align-items:center;gap:5px}
+.leyenda i{width:9px;height:9px;border:1px solid var(--line-2);display:block}
+.leyenda i.l2{background:var(--yellow);border-color:var(--ink)}
+.leyenda i.l3{background:var(--blue-soft);border:2px solid var(--blue)}
 .cola-pie .btn{width:100%}
 .vacio{
   padding:22px 16px;color:var(--ink-3);font-size:12.5px;line-height:1.55;
@@ -664,6 +676,11 @@ main{flex:1 1 auto;min-height:0;position:relative}
           <div class="cola-cab"><h2>Comandas abiertas</h2><span id="cola-n">0</span></div>
           <div class="cola-lista" id="cola-lista"></div>
           <div class="cola-pie">
+            <div class="leyenda">
+              <span><i></i>Libre</span>
+              <span><i class="l2"></i>En captura</span>
+              <span><i class="l3"></i>Con cuenta</span>
+            </div>
             <button class="btn" data-act="ir" data-v="cocina">Abrir pase de cocina</button>
           </div>
         </aside>
