@@ -8,8 +8,13 @@ la interfaz habla con el backend por `google.script.run` y el estado vive en
 
 | | URL | Qué es |
 |---|---|---|
-| **Web app (Apps Script, backend real)** | https://script.google.com/macros/s/AKfycbz6hGjz80Huz16fR_pAKgoMS6BpHDoxEz9thIt1z_YKNodIfqgT-5utFpLg9m-hpvFIWQ/exec | El sistema completo. Si el navegador tiene varias cuentas de Google, Google puede devolver "Página no encontrada": abrir en **ventana privada**. |
-| **Respaldo público (GitHub Pages)** | https://catech124.github.io/koji-comandas/ | La misma interfaz con un adaptador que emula el backend en el navegador. Abre en cualquier cuenta, sin incógnito. |
+| **Link para usar / proyectar** | https://catech124.github.io/koji-comandas/ | La interfaz completa con un adaptador que emula el backend en el navegador. Abre en cualquier cuenta de Google, sin incógnito. |
+| **Web app de Apps Script (backend real)** | https://is.gd/oFMKcs → `…/AKfycbz6hGj…/exec` | El sistema completo con `PropertiesService`. Abrir en **ventana privada**: con sesión de Google, Google no resuelve web apps de otra cuenta. |
+| **Web app original (compartido)** | `…/AKfycbzq3UqHfsyci9AHcFQy…/exec` | Mismo proyecto donde otro agente dejó `IndexAlterno`; `?ui=alt` sirve su interfaz. |
+
+El link bueno de un web app de Apps Script **siempre termina en `/exec`**. Si ves una página de
+Google Drive con «No se puede abrir el archivo en estos momentos», estás abriendo el ID del
+proyecto (o una URL truncada), no el deployment.
 
 > Los dos enlaces ejecutan el mismo código y el mismo diseño. El de Apps Script es el
 > proyecto real (backend con `PropertiesService`); el de GitHub Pages es la misma
