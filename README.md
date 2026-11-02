@@ -8,8 +8,7 @@ la interfaz habla con el backend por `google.script.run` y el estado vive en
 
 | | URL | Qué es |
 |---|---|---|
-| **Link para usar / proyectar** | https://catech124.github.io/koji-comandas/ | La interfaz completa con un adaptador que emula el backend en el navegador. Abre en cualquier cuenta de Google, sin incógnito. |
-| **Web app de Apps Script (backend real)** | https://is.gd/oFMKcs → `…/AKfycbz6hGj…/exec` | El sistema completo con `PropertiesService`. Abrir en **ventana privada**: con sesión de Google, Google no resuelve web apps de otra cuenta. |
+| **Web app de Apps Script (backend real)** | https://is.gd/0SQE1W → `https://script.google.com/a/macros/ucaribe.edu.mx/s/AKfycbz6hGj…/exec` | El sistema completo con `PropertiesService`. La ruta `/a/macros/<dominio>/` fuerza la resolución contra la cuenta institucional; con la ruta normal Google devuelve 404. |
 | **Web app original (compartido)** | `…/AKfycbzq3UqHfsyci9AHcFQy…/exec` | Mismo proyecto donde otro agente dejó `IndexAlterno`; `?ui=alt` sirve su interfaz. |
 
 El link bueno de un web app de Apps Script **siempre termina en `/exec`**. Si ves una página de
