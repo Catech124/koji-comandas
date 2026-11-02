@@ -203,7 +203,9 @@ body[data-vista="cocina"] .panel{display:none}
 .buscador input{width:100%;background:none;border:0;outline:none;font-size:12.5px}
 .buscador input::placeholder{color:#5E6069}
 
-.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 14px;scrollbar-width:none}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 14px;scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 26px),transparent 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 26px),transparent 100%)}
 .chips::-webkit-scrollbar{display:none}
 .chip{
   flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-radius:999px;
@@ -255,6 +257,12 @@ body[data-vista="cocina"] .panel{display:none}
   background:rgba(245,185,66,.13);border:1px solid rgba(245,185,66,.3);color:var(--gold-2);
 }
 .panel .cab .mesa-chip.vacia{background:rgba(255,255,255,.035);border-color:var(--line);color:var(--muted)}
+.panel .cerrar-panel{
+  display:none;width:32px;height:32px;border-radius:50%;place-items:center;flex:0 0 auto;
+  background:rgba(255,255,255,.06);color:var(--text-2);transition:background .15s,color .15s;
+}
+.panel .cerrar-panel:hover{background:rgba(255,255,255,.14);color:var(--text)}
+.panel .cerrar-panel svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 .panel .ajustes{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:14px 20px;border-bottom:1px solid var(--line)}
 .campo label{display:block;font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .pax{display:flex;align-items:center;justify-content:space-between;height:36px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);padding:0 4px}
@@ -495,7 +503,7 @@ textarea.nota:focus{border-color:rgba(245,185,66,.5)}
   .mesas{grid-template-columns:repeat(auto-fill,minmax(132px,1fr))}
   .resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media (max-width:1024px){
+@media (max-width:900px){
   .app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 62px;height:100dvh}
   body[data-vista="cocina"] .app{grid-template-columns:1fr}
   .rail{
@@ -518,6 +526,8 @@ textarea.nota:focus{border-color:rgba(245,185,66,.5)}
     box-shadow:0 -30px 60px rgba(0,0,0,.6);padding-bottom:env(safe-area-inset-bottom);
   }
   body.carrito .panel{transform:none}
+  body.carrito .fab{display:none!important}
+  body.carrito .stage::after{content:'';position:fixed;inset:0;background:rgba(5,6,8,.55);z-index:40;animation:aparece .2s ease both}
   body[data-vista="cocina"] .fab{display:none}
   .panel .cab{padding:14px 16px 12px}
   .panel .cierre{padding-bottom:calc(18px + env(safe-area-inset-bottom))}
@@ -534,7 +544,7 @@ textarea.nota:focus{border-color:rgba(245,185,66,.5)}
   .cola{grid-template-columns:1fr}
   .platos{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
 }
-@media (min-width:1025px){.panel .cerrar-panel{display:none}}
+@media (min-width:901px){.panel .cerrar-panel{display:none}}
 @media (max-width:620px){
   .bar .der .pildora{display:none}
   .bar .der .pildora.viva{display:flex}
@@ -1032,9 +1042,16 @@ function dibujarPanel() {
     : '';
 
   if (!A.carrito.length) {
+    var abiertas = A.mesa ? comandasDeMesa(A.mesa) : [];
+    var tituloVacio, textoVacio;
+    if (!A.mesa) { tituloVacio = 'Ninguna mesa elegida'; textoVacio = 'Elige una mesa del plano para empezar.'; }
+    else if (abiertas.length) {
+      tituloVacio = 'Nueva ronda';
+      textoVacio = 'La mesa ya tiene ' + abiertas.length + ' comanda' + (abiertas.length > 1 ? 's' : '') +
+        ' por ' + dinero(totalMesa(A.mesa)) + '. Agrega platillos para otra ronda.';
+    } else { tituloVacio = 'Comanda vacía'; textoVacio = 'Toca un platillo de la carta para agregarlo.'; }
     $('#lineas').innerHTML = '<div class="vacio">' + icono('ticket') +
-      '<b>' + (A.mesa ? 'Comanda vacía' : 'Ninguna mesa elegida') + '</b>' +
-      '<span>' + (A.mesa ? 'Toca un platillo de la carta para agregarlo.' : 'Elige una mesa del plano para empezar.') + '</span></div>';
+      '<b>' + tituloVacio + '</b><span>' + textoVacio + '</span></div>';
   } else {
     $('#lineas').innerHTML = A.carrito.map(function (l) {
       var p = A.porId[l.id];

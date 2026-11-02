@@ -184,8 +184,13 @@ function reiniciarTurno() {
 /*  Web app                                                            */
 /* ------------------------------------------------------------------ */
 
-function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
+/**
+ * Sirve la interfaz. Con ?ui=alt entrega la versión alternativa (IndexAlterno),
+ * misma API y mismos datos; sin parámetro entrega la interfaz original.
+ */
+function doGet(e) {
+  var alt = e && e.parameter && e.parameter.ui === 'alt';
+  return HtmlService.createHtmlOutputFromFile(alt ? 'IndexAlterno' : 'Index')
     .setTitle('Kōji · comandas')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
