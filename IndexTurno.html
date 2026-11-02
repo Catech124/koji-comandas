@@ -133,8 +133,8 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .zona{border:1px solid var(--line-2);position:relative;padding:20px 12px 12px;background:oklch(1 0 0 / .45);display:flex;flex-direction:column;min-height:0}
 .zona::before{
   content:"";position:absolute;inset:0;pointer-events:none;
-  background-image:linear-gradient(oklch(0.235 0.022 255 / .055) 1px,transparent 1px),
-                   linear-gradient(90deg,oklch(0.235 0.022 255 / .055) 1px,transparent 1px);
+  background-image:linear-gradient(oklch(0.235 0.022 255 / .045) 1px,transparent 1px),
+                   linear-gradient(90deg,oklch(0.235 0.022 255 / .045) 1px,transparent 1px);
   background-size:24px 24px;
 }
 .zona > *{position:relative;z-index:1}
@@ -149,8 +149,8 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .zona.terraza{grid-column:2;grid-row:1 / span 3}
 .mapa{display:grid;gap:14px;flex:1 1 auto;align-content:space-evenly;justify-items:stretch}
 .mapa.m-salon{grid-template-columns:repeat(3,1fr)}
-.mapa.m-terraza{grid-template-columns:repeat(2,1fr)}
-.mapa.m-barra{grid-template-columns:repeat(4,72px);justify-content:space-around;padding-top:14px;position:relative}
+.mapa.m-terraza{grid-template-columns:repeat(4,1fr)}
+.mapa.m-barra{grid-template-columns:repeat(4,72px);justify-content:space-around;align-content:start;padding-top:26px;position:relative}
 /* barra: la línea del mostrador */
 .mapa.m-barra::before{
   content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--ink-2);
@@ -163,14 +163,14 @@ main{flex:1 1 auto;min-height:0;position:relative}
 /* mesas */
 .mesa-t{
   position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-  border:1px solid var(--line-2);background:var(--sur);min-height:66px;padding:4px 4px 6px;text-align:center;
+  border:1px solid var(--line-2);background:var(--sur);min-height:84px;padding:4px 4px 6px;text-align:center;
   transition:background .14s var(--ease),border-color .14s var(--ease),transform .1s var(--ease);
 }
 .mesa-t:hover{border-color:var(--ink);transform:translateY(-1px)}
 .mesa-t .nen{font-family:var(--mono);font-size:20px;font-weight:600;line-height:1}
 .mesa-t .est{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-align:center}
 .mesa-t .tot{font-family:var(--mono);font-size:9.5px;color:var(--ink-2);line-height:1.2}
-.mesa-t.t2{border-radius:50%;min-height:78px;max-width:78px;justify-self:center;width:100%}
+.mesa-t.t2{border-radius:50%;min-height:92px;max-width:92px;justify-self:center;width:100%}
 .mesa-t.t6{grid-column:span 2}
 .mesa-t.t-bar{border-radius:50%;min-height:64px;max-width:72px;justify-self:center;width:100%}
 .mesa-t[data-estado="captura"]{background:var(--yellow);border-color:var(--ink)}
@@ -315,8 +315,19 @@ main{flex:1 1 auto;min-height:0;position:relative}
   border:1px solid oklch(1 0 0 / .3);padding:1px 5px;color:var(--on-ink-2);
 }
 .c-meta .chip.tarde{border-color:var(--red);color:oklch(0.78 0.14 33)}
+.c-cerrar{display:none;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-ink-2);border:1px solid oklch(1 0 0 / .3);padding:2px 7px;margin-left:auto}
 
-.c-body{flex:1 1 auto;min-height:0;overflow-y:auto}
+.c-body{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column}
+.c-pases{margin:12px 12px 14px;margin-top:auto;border-top:1px dashed var(--line-2);padding-top:9px}
+.c-pases-cab{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.pase{display:grid;grid-template-columns:74px minmax(0,1fr) 30px;align-items:center;gap:8px;padding:2px 0}
+.pase span{font-family:var(--mono);font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.pase i{height:4px;background:var(--bg-2);display:block;position:relative}
+.pase i b{position:absolute;left:0;top:0;bottom:0;background:var(--ink);display:block}
+.pase em{font-family:var(--mono);font-style:normal;font-size:9.5px;color:var(--ink-2);text-align:right}
+.pase.barra i b{background:var(--blue)}
+.menu-pie{max-width:82ch;padding:14px 16px 18px;font-family:var(--mono);font-size:9px;letter-spacing:.05em;line-height:1.7;text-transform:uppercase;color:var(--ink-3);border-top:1px solid var(--line)}
+::placeholder{color:oklch(0.500 0.012 255);opacity:1}
 .linea{border-bottom:1px solid var(--line)}
 .l-top{
   display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;
@@ -379,9 +390,19 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .c-enviar .m{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:oklch(0.35 0.03 95)}
 .c-enviar:disabled .m{color:var(--ink-3)}
 .c-nota{font-size:10.5px;color:var(--ink-3);margin-top:6px;line-height:1.4}
-.c-vacia{padding:26px 16px;color:var(--ink-3);font-size:12.5px;line-height:1.55}
+.c-vacia{padding:26px 16px 10px;color:var(--ink-3);font-size:12.5px;line-height:1.55}
 .c-vacia b{display:block;color:var(--ink);font-size:14px;margin-bottom:4px}
 .c-vacia .flecha{font-family:var(--mono);font-size:22px;color:var(--ink-3);display:block;margin-bottom:10px}
+.c-envios{padding:0 12px 12px}
+.c-envios-cab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);border-top:1px dashed var(--line-2);padding:10px 0 7px}
+.c-envio{display:grid;grid-template-columns:1fr auto;grid-template-areas:"f e" "h h";gap:2px 8px;width:100%;padding:7px 0;border-bottom:1px solid var(--line);transition:background .12s var(--ease)}
+.c-envio:hover{background:var(--bg)}
+.c-envio .f{grid-area:f;font-family:var(--mono);font-size:12.5px;font-weight:600}
+.c-envio .e{grid-area:e;display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.c-envio .e i{width:6px;height:6px;background:var(--ink-3)}
+.c-envio[data-est="fuego"] .e i{background:var(--yellow-2)}
+.c-envio[data-est="listo"] .e i{background:var(--blue)}
+.c-envio .h{grid-area:h;font-family:var(--mono);font-size:9.5px;color:var(--ink-3)}
 
 /* ---------- cocina ---------- */
 #v-cocina{flex-direction:column}
@@ -407,15 +428,15 @@ main{flex:1 1 auto;min-height:0;position:relative}
   border-bottom:1px solid var(--line-2);background:var(--sur);
 }
 .kcol-cab i{width:9px;height:9px;display:block;background:var(--ink-3)}
-.kcol[data-est="nueva"] .kcol-cab i{background:var(--yellow)}
-.kcol[data-est="fuego"] .kcol-cab i{background:var(--red)}
+.kcol[data-est="nueva"] .kcol-cab i{background:var(--ink-3)}
+.kcol[data-est="fuego"] .kcol-cab i{background:var(--yellow-2)}
 .kcol[data-est="listo"] .kcol-cab i{background:var(--blue)}
 .kcol-cab h2{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
 .kcol-cab .n{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:auto}
 .kcol-lista{flex:1 1 auto;min-height:0;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
 .kt{border:1px solid var(--line-2);background:var(--sur);display:flex;flex-direction:column;border-top:3px solid var(--ink-3)}
-.kt[data-est="nueva"]{border-top-color:var(--yellow)}
-.kt[data-est="fuego"]{border-top-color:var(--red)}
+.kt[data-est="nueva"]{border-top-color:var(--ink-3)}
+.kt[data-est="fuego"]{border-top-color:var(--yellow-2)}
 .kt[data-est="listo"]{border-top-color:var(--blue)}
 .kt.late{outline:1px solid var(--red);outline-offset:-1px}
 .kt-h{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--line)}
@@ -488,13 +509,13 @@ main{flex:1 1 auto;min-height:0;position:relative}
   width:min(392px,100%);
   animation:entra .18s var(--ease);
 }
-@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes entra{from{transform:translateY(6px)}to{transform:none}}
 .capa-acc{
   display:flex;align-items:center;gap:6px;padding:8px;border-bottom:1px solid var(--line-2);background:var(--bg);
 }
 .capa-acc .btn{height:30px;font-size:11.5px}
 .capa-acc .btn:first-child{flex:1 1 auto}
-.capa-scroll{overflow-y:auto;padding:12px}
+.capa-scroll{overflow-y:auto;padding:12px;min-height:0}
 
 /* el ticket */
 .ticket{font-family:var(--mono);font-size:11px;line-height:1.45;color:var(--ink);background:var(--sur);border:1px solid var(--line-2)}
@@ -521,6 +542,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .tk-pie{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:10px;padding-top:7px}
 .tk-pie dt{color:var(--ink-3);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase}
 .tk-pie dd{text-align:right;font-weight:500}
+.tk-pie dd:last-of-type{font-size:13px;font-weight:600}
 .sello{
   margin:14px auto 2px;width:max-content;border:2px solid var(--red);color:var(--red);
   padding:4px 10px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
@@ -562,15 +584,23 @@ main{flex:1 1 auto;min-height:0;position:relative}
   .topmeta .servicio{display:none}
   .clock{font-size:12.5px}
   .piso-head{flex-direction:column;align-items:stretch}
-  .stats{overflow-x:auto}
-  .stat{padding:9px 13px;flex:0 0 auto}
+  .stats{overflow:visible;flex-wrap:wrap}
+  .stat{padding:8px 10px;flex:1 1 auto}
+  .stat dt{font-size:8px;letter-spacing:.1em}
+  .stat dd{font-size:15px}
+  .stat dd small{font-size:9px}
   .piso-acciones{border-left:0;border-top:1px solid var(--line);padding:8px 12px}
   .piso-cuerpo{grid-template-columns:1fr;overflow-y:auto;display:block}
-  .plano{overflow:visible;grid-template-columns:1fr;padding:12px}
-  .zona.salon,.zona.barra,.zona.terraza{grid-column:1;grid-row:auto}
+  .plano{display:block;height:auto;overflow:visible;padding:12px}
+  .zona.salon,.zona.barra,.zona.terraza{grid-column:auto;grid-row:auto}
+  .zona{margin-bottom:16px}
+  .zona:last-child{margin-bottom:0}
+  .mapa{flex:none}
+  .buscador .resumen{display:none}
   .mapa.m-salon{grid-template-columns:repeat(4,1fr)}
   .mapa.m-terraza{grid-template-columns:repeat(4,1fr)}
   .mesa-t.t2{max-width:none;border-radius:0;min-height:62px}
+  .mesa-t.t6{grid-column:span 1}
   .cola{border-left:0;border-top:1px solid var(--line-2);max-height:none;display:block}
   .cola-lista{max-height:none}
   .mesa-barra{height:50px;gap:10px;padding:0 10px;overflow-x:auto}
@@ -590,6 +620,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
     border-left:0;border-top:2px solid var(--ink);box-shadow:0 -10px 30px oklch(0.235 0.022 255 / .18);
   }
   body[data-hoja="on"] .comanda{transform:none}
+  .c-cerrar{display:inline-flex;align-items:center}
   .velo{
     display:block;position:fixed;inset:0;background:oklch(0.235 0.022 255 / .45);z-index:29;
     opacity:0;pointer-events:none;transition:opacity .18s var(--ease);
@@ -735,6 +766,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
               <label for="mesero">Mesero</label>
               <select id="mesero"></select>
               <span class="chip" id="c-estado">borrador</span>
+              <button class="c-cerrar" data-act="hoja-cerrar">Cerrar ×</button>
             </div>
           </header>
 
@@ -910,7 +942,8 @@ main{flex:1 1 auto;min-height:0;position:relative}
         .withSuccessHandler(ok)
         .withFailureHandler(function (e) { mal(e instanceof Error ? e : new Error((e && e.message) || 'Error del servicio')); });
       if (typeof runner[fn] !== 'function') { mal(new Error('La función ' + fn + ' no está publicada')); return; }
-      runner[fn].apply(runner, args || []);
+      var argv = args == null ? [] : (Array.isArray(args) ? args : [args]);
+      runner[fn].apply(runner, argv);
     });
   }
 
@@ -1104,7 +1137,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
         '<span class="ch"><i></i>' + (ESTADOS[c.estado] || c.estado) + '</span>' +
         '<span class="m">Mesa ' + dos(c.mesa) + ' · ' + c.comensales + ' pax · ' + esc(c.mesero) + '</span>' +
         '<span class="d' + (tarde ? ' late' : '') + '" data-hace="' + c.ts + '">' + hace(c.ts) + '</span>' +
-        '<span class="t">' + dinero(c.total) + '</span>' +
+        '<span class="t">' + dinero(totalDe([c])) + '</span>' +
         '</button>';
     }).join('');
   }
@@ -1157,29 +1190,44 @@ main{flex:1 1 auto;min-height:0;position:relative}
     var cuenta = {};
     A.carrito.forEach(function (l) { cuenta[l.id] = (cuenta[l.id] || 0) + l.qty; });
 
-    $('#platillos').innerHTML = lista.map(function (p) {
-      var c = cuenta[p.id] || 0;
-      var tags = '';
-      if (p.veg) tags += '<span class="tag veg">veg</span>';
-      if (p.term) tags += '<span class="tag">término</span>';
-      if (c) tags += '<span class="tag cuenta">×' + c + '</span>';
-      var desc = p.d && p.d !== '.' ? p.d : '';
-      if (q) desc = CAT[p.c].n + (desc ? ' · ' + desc : '');
-      return '<button class="plato" data-act="add" data-id="' + p.id + '" data-en="' + (c ? 1 : 0) + '"' +
-        ' aria-label="Agregar ' + esc(p.n) + ', ' + dinero(p.p) + '">' +
-        '<span class="pn">' + esc(p.n) + tags + '</span>' +
-        '<span class="pd">' + esc(desc) + '</span>' +
-        '<span class="pm">' + p.m + '′</span>' +
-        '<span class="pp">' + dinero(p.p) + '</span>' +
-        '<span class="pa" aria-hidden="true">+</span></button>';
-    }).join('');
+      $('#platillos').innerHTML = lista.map(function (p) {
+        var c = cuenta[p.id] || 0;
+        var tags = '';
+        if (p.veg) tags += '<span class="tag veg">veg</span>';
+        if (p.term) tags += '<span class="tag">término</span>';
+        if (c) tags += '<span class="tag cuenta">×' + c + '</span>';
+        var desc = p.d && p.d !== '.' ? p.d : '';
+        if (q) desc = CAT[p.c].n + (desc ? ' · ' + desc : '');
+        return '<button class="plato" data-act="add" data-id="' + p.id + '" data-en="' + (c ? 1 : 0) + '"' +
+          ' aria-label="Agregar ' + esc(p.n) + ', ' + dinero(p.p) + '">' +
+          '<span class="pn">' + esc(p.n) + tags + '</span>' +
+          '<span class="pd">' + esc(desc) + '</span>' +
+          '<span class="pm">' + p.m + '′</span>' +
+          '<span class="pp">' + dinero(p.p) + '</span>' +
+          '<span class="pa" aria-hidden="true">+</span></button>';
+      }).join('') + '<p class="menu-pie">Los tiempos se suman por pase: 1er tiempo, 2º tiempo y postre. La barra no suma: sale al momento. Toca la partida en la comanda para abrir término, alergias y notas.</p>';
   }
 
   function pintarLineas() {
     var el = $('#lineas');
     if (!A.carrito.length) {
-      el.innerHTML = '<div class="c-vacia"><span class="flecha" aria-hidden="true">←</span><b>Sin partidas</b>' +
-        'Toca un platillo de la carta para agregarlo. Toca una partida para abrir término, alergias y notas.</div>';
+      var cs = A.mesa ? comandasDe(A.mesa) : [];
+      el.innerHTML = '<div class="c-vacia"><span class="flecha" aria-hidden="true">←</span><b>' +
+        (cs.length ? 'Comanda enviada' : 'Sin partidas') + '</b>' +
+        (cs.length ? 'Esta mesa ya tiene una comanda en cocina. Agrega platillos para abrir una ronda nueva.'
+                   : 'Toca un platillo de la carta para agregarlo. Toca una partida para abrir término, alergias y notas.') +
+        '</div>' +
+        (cs.length ? '<div class="c-envios"><div class="c-envios-cab"><span>Comandas de la mesa</span><span>' + cs.length + '</span></div>' +
+          cs.map(function (c) {
+            var obj = minutos(c.items);
+            var seg = Math.floor(((c.tsListo || Date.now()) - c.ts) / 1000);
+            var tarde = !c.tsListo && obj > 0 && seg > obj * 60;
+            return '<button class="c-envio" data-act="ticket" data-f="' + esc(c.folio) + '" data-est="' + c.estado + '">' +
+              '<span class="f">' + esc(c.folio) + '</span>' +
+              '<span class="e"><i></i>' + (ESTADOS[c.estado] || c.estado) + '</span>' +
+              '<span class="h">' + hhmm(c.ts) + ' · ' + hace(c.ts) + ' · ' + dinero(totalDe([c])) +
+                (tarde ? ' · fuera de tiempo' : '') + '</span></button>';
+          }).join('') + '</div>' : '');
       return;
     }
     el.innerHTML = '<ul>' + A.carrito.map(function (l) {
@@ -1204,14 +1252,33 @@ main{flex:1 1 auto;min-height:0;position:relative}
         '</div>' +
         (abierta ? editorHTML(l, p) : '') +
       '</li>';
-    }).join('') + '</ul>';
+    }).join('') + '</ul>' + pasesHTML();
+  }
+
+  function pasesHTML() {
+    if (!A.carrito.length) return '';
+    var por = {};
+    A.carrito.forEach(function (l) {
+      var p = A.porId[l.id]; if (!p) return;
+      var c = CAT[p.c]; if (!c) return;
+      if (por[c.pase] == null || p.m > por[c.pase]) por[c.pase] = p.m;
+    });
+    var NOM = { 0: 'barra', 1: '1er tiempo', 2: '2º tiempo', 3: '3er tiempo', 4: 'postre' };
+    var keys = Object.keys(por).map(Number).sort(function (a, b) { return a - b; });
+    var max = keys.reduce(function (a, k) { return Math.max(a, por[k]); }, 1);
+    return '<div class="c-pases"><div class="c-pases-cab"><span>Salida por pase</span><span>≈ ' + minutosSalida() + ' min</span></div>' +
+      keys.map(function (k) {
+        var w = k === 0 ? 8 : Math.max(6, Math.round(por[k] / max * 100));
+        return '<div class="pase' + (k === 0 ? ' barra' : '') + '"><span>' + NOM[k] + '</span>' +
+          '<i><b style="width:' + w + '%"></b></i><em>' + (k === 0 ? 'ya' : por[k] + '′') + '</em></div>';
+      }).join('') + '</div>';
   }
 
   function editorHTML(l, p) {
     var term = p.term ? grupo('Término',
-      TERMINOS.map(function (t) { return chip('term', t, l.termino === t); }).join('')) : '';
+      TERMINOS.map(function (t) { return chip('term', t, l.termino === t, l.uid); }).join('')) : '';
     var ops = (p.op || []).length ? grupo('Modificaciones estándar',
-      p.op.map(function (o) { return chip('op', o, (l.op || []).indexOf(o) >= 0); }).join('')) : '';
+      p.op.map(function (o) { return chip('op', o, (l.op || []).indexOf(o) >= 0, l.uid); }).join('')) : '';
     var alg = ALERGIAS.map(function (a) {
       return '<option value="' + esc(a) + '"' + (l.alergia === a ? ' selected' : '') + '>' + (a || 'Sin alergia') + '</option>';
     }).join('');
@@ -1234,8 +1301,8 @@ main{flex:1 1 auto;min-height:0;position:relative}
   function grupo(titulo, html) {
     return '<div class="grupo"><span class="l">' + titulo + '</span><div class="chips">' + html + '</div></div>';
   }
-  function chip(k, v, on) {
-    return '<button class="chip" data-act="chip" data-k="' + k + '" data-v="' + esc(v) + '" aria-pressed="' + (!!on) + '">' + esc(v) + '</button>';
+  function chip(k, v, on, uid) {
+    return '<button class="chip" data-act="chip" data-k="' + k + '" data-v="' + esc(v) + '" data-uid="' + uid + '" aria-pressed="' + (!!on) + '">' + esc(v) + '</button>';
   }
 
   function pintarPie() {
@@ -1301,7 +1368,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
         var c = normaliza({
           folio: res.folio, ts: res.ts || Date.now(), mesa: mesa, comensales: pax, mesero: mesero,
           items: items, estado: 'nueva', tsListo: null,
-          total: typeof res.total === 'number' ? res.total : items.reduce(function (a, l) { return a + l.precio * l.qty; }, 0)
+          total: (typeof res.total === 'number' && res.total > 0) ? res.total : items.reduce(function (a, l) { return a + l.precio * l.qty; }, 0)
         });
         A.comandas.push(c);
         A.carrito = [];
@@ -1427,7 +1494,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
   function pintarCarta() {
     var i = 0;
     $('#carta-cuenta').textContent = A.carta.length + ' platillos · 6 estaciones';
-    var html = '<div class="spec-head"><span>Nº</span><span>Platillo</span><span>Estación</span><span>Tiempo</span><span>Precio</span><span>Modificaciones estándar</span></div>';
+    var html = '<div class="spec-head"><span>Nº</span><span>Platillo</span><span>Pase</span><span>Tiempo</span><span>Precio</span><span>Modificaciones estándar</span></div>';
     ORDEN_CAT.forEach(function (c) {
       var lista = A.carta.filter(function (p) { return p.c === c; });
       html += '<div class="grupo-cab"><h2>' + CAT[c].n + '</h2><span class="n">' + lista.length + '</span><span class="tk">' + CAT[c].tk + '</span></div>';
@@ -1437,7 +1504,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
           '<span><span class="nom">' + esc(p.n) +
             (p.veg ? '<span class="tag veg">veg</span>' : '') + (p.term ? '<span class="tag">término</span>' : '') +
           '</span>' + (p.d && p.d !== '.' ? '<span class="des">' + esc(p.d) + '</span>' : '') + '</span>' +
-          '<span class="est">' + CAT[c].n.toLowerCase() + '</span>' +
+          '<span class="est">' + ({ 0: 'barra', 1: '1er tiempo', 2: '2º tiempo', 3: '3er tiempo', 4: 'postre' })[CAT[c].pase] + '</span>' +
           '<span class="min">' + p.m + ' min</span>' +
           '<span class="pre">' + dinero(p.p) + '</span>' +
           '<span class="mods">' + (p.term ? '<span>término</span>' : '') +

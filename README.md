@@ -8,12 +8,14 @@ la interfaz habla con el backend por `google.script.run` y el estado vive en
 
 | | URL | Qué es |
 |---|---|---|
-| **Web app (Apps Script, backend real)** | https://script.google.com/macros/s/AKfycbzq3UqHfsyci9AHcFQy-SGHEPLpMMOaMPu72FxJID5GEdeJaRZjPzBixeJPVjrOJkZAZw/exec | El sistema completo. Si el navegador tiene varias cuentas de Google, Google puede devolver "Página no encontrada": abrir en **ventana privada**. |
+| **Web app (Apps Script, backend real)** | https://script.google.com/macros/s/AKfycbz6hGjz80Huz16fR_pAKgoMS6BpHDoxEz9thIt1z_YKNodIfqgT-5utFpLg9m-hpvFIWQ/exec | El sistema completo. Si el navegador tiene varias cuentas de Google, Google puede devolver "Página no encontrada": abrir en **ventana privada**. |
 | **Respaldo público (GitHub Pages)** | https://catech124.github.io/koji-comandas/ | La misma interfaz con un adaptador que emula el backend en el navegador. Abre en cualquier cuenta, sin incógnito. |
 
-> El 404 no es de la app: pasa con cualquier web app de Apps Script de otra cuenta
-> cuando el navegador tiene varias sesiones de Google abiertas (probado también con
-> un web app vacío).
+> Los dos enlaces ejecutan el mismo código y el mismo diseño. El de Apps Script es el
+> proyecto real (backend con `PropertiesService`); el de GitHub Pages es la misma
+> interfaz con un adaptador local, para abrir sin depender de la sesión de Google.
+> Con varias cuentas de Google abiertas, Google devuelve 404 o deja el iframe en blanco
+> en **cualquier** web app de Apps Script (probado también con uno vacío): no es la app.
 
 ---
 
