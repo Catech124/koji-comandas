@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kōji · comandas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0B0E;
+  --panel:#12141A;
+  --panel-2:#171A21;
+  --panel-3:#1E222B;
+  --line:rgba(255,255,255,.07);
+  --line-2:rgba(255,255,255,.14);
+  --text:#F4F1E9;
+  --text-2:#BFBDB5;
+  --muted:#7C7D88;
+  --gold:#F5B942;
+  --gold-2:#FFD37A;
+  --ok:#57D9A3;
+  --hot:#FF6250;
+  --violet:#A78BFA;
+  --sans:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:18px;
+  --r-sm:12px;
+  --shadow:0 20px 50px rgba(0,0,0,.55);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.45;
+  overflow:hidden;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(1100px 620px at 6% -12%, rgba(245,185,66,.13), transparent 62%),
+    radial-gradient(900px 520px at 102% -8%, rgba(167,139,250,.09), transparent 58%),
+    radial-gradient(800px 800px at 50% 120%, rgba(87,217,163,.05), transparent 60%);
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0;text-align:left}
+h1,h2,h3,h4,p,ul,li,dl,dd{margin:0;padding:0;list-style:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.ojo{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ============ armazón ============ */
+.app{position:relative;z-index:1;display:grid;grid-template-columns:86px minmax(0,1fr) 396px;height:100dvh}
+body[data-vista="cocina"] .app{grid-template-columns:86px minmax(0,1fr) 0}
+body[data-vista="cocina"] .panel{display:none}
+
+/* ============ raíl ============ */
+.rail{
+  display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 10px 16px;
+  background:rgba(14,16,21,.72);backdrop-filter:blur(18px);border-right:1px solid var(--line);
+}
+.sello{
+  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;margin-bottom:14px;
+  font-family:var(--sans);letter-spacing:0;
+  background:linear-gradient(155deg,var(--gold),#E39B22);color:#241703;font-size:19px;font-weight:700;
+  box-shadow:0 10px 26px rgba(245,185,66,.28);flex:0 0 auto;
+}
+.rail nav{display:flex;flex-direction:column;gap:6px;width:100%}
+.rail .v{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;
+  padding:12px 4px 10px;border-radius:16px;color:var(--muted);transition:color .15s,background .15s;
+}
+.rail .v svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.rail .v span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;font-weight:600}
+.rail .v:hover{color:var(--text-2);background:rgba(255,255,255,.04)}
+.rail .v[aria-selected="true"]{color:var(--gold-2);background:rgba(245,185,66,.12)}
+.rail .v .pip{
+  position:absolute;top:9px;right:12px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;
+  background:var(--hot);color:#fff;font-family:var(--mono);font-size:9px;line-height:16px;text-align:center;
+}
+.rail .pie{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:4px}
+.rail .pie .h{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--muted)}
+.rail .pie .d{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:#4C4E57}
+
+/* ============ escenario ============ */
+.stage{display:flex;flex-direction:column;min-width:0;min-height:0}
+.bar{
+  flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:16px 26px;border-bottom:1px solid var(--line);
+  background:rgba(10,11,14,.55);backdrop-filter:blur(14px);position:relative;z-index:5;
+}
+.bar .t{min-width:0}
+.bar h1{font-size:21px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.bar .sub{font-size:11.5px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bar .sub .dot{width:3px;height:3px;border-radius:50%;background:var(--muted)}
+.bar .der{margin-left:auto;display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.pildora{
+  display:flex;align-items:baseline;gap:7px;padding:7px 13px;border-radius:999px;
+  background:rgba(255,255,255,.045);border:1px solid var(--line);
+}
+.pildora .k{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.pildora .v{font-family:var(--mono);font-size:13px;font-weight:500}
+.pildora.viva{border-color:rgba(245,185,66,.35);background:rgba(245,185,66,.09)}
+.pildora.viva .v{color:var(--gold-2)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 18px;
+  border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--text);
+  font-size:11.5px;font-weight:600;letter-spacing:.04em;transition:all .15s;white-space:nowrap;
+}
+.btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.24)}
+.btn.oro{background:linear-gradient(160deg,var(--gold-2),var(--gold));border-color:transparent;color:#251803;box-shadow:0 10px 24px rgba(245,185,66,.22)}
+.btn.oro:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn.rojo{background:rgba(255,98,80,.12);border-color:rgba(255,98,80,.45);color:#FFB7AD}
+.btn.rojo:hover{background:rgba(255,98,80,.2)}
+.btn.tenue{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.tenue:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.btn[disabled]{opacity:.34;cursor:not-allowed;transform:none;box-shadow:none;filter:none}
+.btn.mini{height:32px;padding:0 13px;font-size:10.5px;border-radius:999px}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#2A2E38 transparent}
+.scroll::-webkit-scrollbar{width:10px}
+.scroll::-webkit-scrollbar-thumb{background:#262A33;border-radius:8px;border:3px solid transparent;background-clip:content-box}
+.vista{display:none;padding:24px 26px 40px}
+.vista.on{display:block;animation:entra .28s ease both}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ============ salón: piso ============ */
+.resumen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:22px}
+.metrica{
+  padding:14px 16px;border-radius:var(--r);border:1px solid var(--line);
+  background:linear-gradient(165deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
+}
+.metrica .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.metrica .v{font-family:var(--mono);font-size:24px;font-weight:500;letter-spacing:-.03em;margin-top:5px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metrica .v small{font-size:12px;color:var(--muted);letter-spacing:0;margin-left:3px}
+.metrica.oro .v{color:var(--gold-2)}
+.metrica.ok .v{color:var(--ok)}
+
+.bloque-cab{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
+.bloque-cab h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--text-2)}
+.bloque-cab .r{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.bloque-cab .regla{flex:1;height:1px;background:var(--line)}
+
+.mesas{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}
+.mesa{
+  position:relative;min-height:138px;padding:15px 16px;border-radius:20px;border:1px solid var(--line);
+  background:linear-gradient(170deg,#15181F,#101318);display:flex;flex-direction:column;justify-content:space-between;
+  transition:transform .16s,border-color .16s,box-shadow .16s,background .16s;overflow:hidden;
+}
+.mesa::after{
+  content:'';position:absolute;inset:auto -30% -60% auto;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.07),transparent 70%);opacity:0;transition:opacity .2s;
+}
+.mesa:hover{transform:translateY(-2px);border-color:var(--line-2);box-shadow:0 22px 40px rgba(0,0,0,.45)}
+.mesa:hover::after{opacity:1}
+.mesa .m-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.mesa .n{font-family:var(--mono);font-size:33px;font-weight:400;letter-spacing:-.06em;line-height:.9;color:#6D6F7B}
+.mesa .et{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#4E505B;padding-top:6px}
+.mesa .pie{display:flex;flex-direction:column;gap:3px}
+.mesa .est{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.mesa .est .pt{width:6px;height:6px;border-radius:50%;background:#3A3D46}
+.mesa .cifras{font-family:var(--mono);font-size:11px;color:var(--text-2);display:flex;gap:8px;align-items:baseline}
+.mesa .cifras b{color:var(--gold-2);font-weight:500}
+.mesa[data-estado="ocupada"]{border-color:rgba(245,185,66,.3);background:linear-gradient(170deg,rgba(245,185,66,.11),rgba(245,185,66,.025)),#101318}
+.mesa[data-estado="ocupada"] .n{color:var(--gold-2)}
+.mesa[data-estado="ocupada"] .et{color:rgba(245,185,66,.55)}
+.mesa[data-estado="ocupada"] .est{color:var(--gold-2)}
+.mesa[data-estado="ocupada"] .est .pt{background:var(--gold);box-shadow:0 0 0 4px rgba(245,185,66,.14)}
+.mesa[data-estado="cuenta"]{border-color:rgba(255,98,80,.4);background:linear-gradient(170deg,rgba(255,98,80,.1),rgba(255,98,80,.02)),#101318}
+.mesa[data-estado="cuenta"] .n{color:#FF9A8C}
+.mesa[data-estado="cuenta"] .est .pt{background:var(--hot)}
+.mesa[data-estado="captura"]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 16px 34px rgba(245,185,66,.16)}
+.mesa .marca-sel{position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;background:var(--gold);display:none;place-items:center}
+.mesa .marca-sel svg{width:11px;height:11px;stroke:#241703;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.mesa[data-estado="captura"] .marca-sel{display:grid}
+
+/* ============ salón: carta ============ */
+.miga{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.miga .volver{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;
+  background:rgba(255,255,255,.03);transition:all .15s;flex:0 0 auto;
+}
+.miga .volver:hover{background:rgba(255,255,255,.09);transform:translateX(-2px)}
+.miga .volver svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.miga .quien{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.miga .quien b{font-size:19px;font-weight:600;letter-spacing:-.02em}
+.miga .quien span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.miga .sep{width:1px;height:22px;background:var(--line)}
+.miga .acc{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+.buscador{
+  display:flex;align-items:center;gap:9px;height:40px;padding:0 14px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.035);min-width:210px;transition:border-color .15s,background .15s;
+}
+.buscador:focus-within{border-color:rgba(245,185,66,.5);background:rgba(245,185,66,.06)}
+.buscador svg{width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:1.9;stroke-linecap:round;flex:0 0 auto}
+.buscador input{width:100%;background:none;border:0;outline:none;font-size:12.5px}
+.buscador input::placeholder{color:#5E6069}
+
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 14px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.035);font-size:10.5px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:all .15s;
+}
+.chip .c{font-family:var(--mono);font-size:9.5px;letter-spacing:0;color:#5E6069}
+.chip:hover{color:var(--text-2);border-color:var(--line-2)}
+.chip[aria-selected="true"]{background:var(--text);border-color:var(--text);color:#101216}
+.chip[aria-selected="true"] .c{color:#6C6E77}
+
+.platos{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:12px}
+.plato{
+  position:relative;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:20px;
+  border:1px solid var(--line);background:linear-gradient(170deg,#15181F,#101318);
+  transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden;
+}
+.plato:hover{transform:translateY(-2px);border-color:rgba(245,185,66,.34);box-shadow:0 22px 40px rgba(0,0,0,.45)}
+.plato .top{display:flex;align-items:flex-start;gap:10px}
+.plato h3{font-size:14.5px;font-weight:600;letter-spacing:-.01em;line-height:1.28;flex:1}
+.plato .desc{font-size:11.5px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.plato .pie{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:2px}
+.plato .mins{font-family:var(--mono);font-size:10px;color:var(--muted);display:inline-flex;align-items:center;gap:5px}
+.plato .mins svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8}
+.plato .precio{font-family:var(--mono);font-size:15px;font-weight:500;margin-left:auto}
+.plato .cuenta{font-family:var(--mono);font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:999px;background:rgba(245,185,66,.16);color:var(--gold-2)}
+.plato .suma{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;
+  border:1px solid rgba(245,185,66,.4);color:var(--gold-2);background:rgba(245,185,66,.07);transition:all .15s;
+}
+.plato .suma svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+.plato:hover .suma{background:var(--gold);border-color:var(--gold);color:#241703}
+.plato .tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{
+  font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#6F717C;
+  border:1px solid var(--line);border-radius:999px;padding:2px 7px;
+}
+.tag.veg{color:#8FE0B6;border-color:rgba(87,217,163,.3)}
+
+/* ============ panel de comanda ============ */
+.panel{
+  display:flex;flex-direction:column;min-height:0;border-left:1px solid var(--line);
+  background:rgba(14,16,21,.72);backdrop-filter:blur(18px);
+}
+.panel .cab{flex:0 0 auto;padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.panel .cab h2{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:var(--text-2)}
+.panel .cab .mesa-chip{
+  margin-left:auto;font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:999px;
+  background:rgba(245,185,66,.13);border:1px solid rgba(245,185,66,.3);color:var(--gold-2);
+}
+.panel .cab .mesa-chip.vacia{background:rgba(255,255,255,.035);border-color:var(--line);color:var(--muted)}
+.panel .ajustes{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.campo label{display:block;font-size:8.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.pax{display:flex;align-items:center;justify-content:space-between;height:36px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);padding:0 4px}
+.pax button{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;color:var(--text-2);transition:background .15s,color .15s}
+.pax button:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.pax button svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.pax span{font-family:var(--mono);font-size:13px}
+select.sel{
+  width:100%;height:36px;border-radius:12px;border:1px solid var(--line);background:#171A21;
+  padding:0 10px;font-size:11.5px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237C7D88' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+
+.lineas{flex:1 1 auto;min-height:0;overflow-y:auto;padding:14px 20px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:#2A2E38 transparent}
+.lineas::-webkit-scrollbar{width:8px}
+.lineas::-webkit-scrollbar-thumb{background:#262A33;border-radius:8px}
+.linea{
+  display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:start;
+  padding:11px 12px;border-radius:14px;border:1px solid transparent;background:rgba(255,255,255,.035);
+  transition:border-color .15s,background .15s;width:100%;
+}
+.linea:hover{background:rgba(255,255,255,.06);border-color:var(--line-2)}
+.linea .q{font-family:var(--mono);font-size:12px;color:var(--gold);padding-top:1px}
+.linea .nom{font-size:12.5px;font-weight:500;line-height:1.3}
+.linea .mods{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.linea .mods i{
+  font-style:normal;font-family:var(--mono);font-size:8.5px;letter-spacing:.03em;text-transform:uppercase;
+  padding:2px 6px;border-radius:999px;background:rgba(255,255,255,.06);color:#A9A9B4;
+}
+.linea .mods i.al{background:rgba(255,98,80,.18);color:#FFB0A6}
+.linea .mods i.ur{background:rgba(245,185,66,.18);color:var(--gold-2)}
+.linea .nota{font-size:10.5px;font-style:italic;color:var(--muted);margin-top:4px}
+.linea .pt{font-family:var(--mono);font-size:11.5px;color:var(--text-2);padding-top:1px}
+
+.vacio{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:38px 18px;text-align:center;color:var(--muted)}
+.vacio svg{width:26px;height:26px;stroke:#3D404A;fill:none;stroke-width:1.5;stroke-linecap:round}
+.vacio b{font-size:12.5px;font-weight:500;color:var(--text-2)}
+.vacio span{font-size:11px;max-width:24ch;line-height:1.5}
+
+.estaciones{flex:0 0 auto;padding:0 20px 12px;display:flex;flex-direction:column;gap:6px}
+.estaciones[hidden]{display:none}
+.est{display:grid;grid-template-columns:62px 1fr 34px;align-items:center;gap:9px;font-family:var(--mono);font-size:9px;color:var(--muted)}
+.est .pista{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
+.est .pista i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+.est .pista i.hot{background:linear-gradient(90deg,#FF6246,#FFA36B)}
+.est .t{text-align:right}
+
+.cierre{flex:0 0 auto;padding:14px 20px 18px;border-top:1px solid var(--line);background:rgba(255,255,255,.015)}
+.total{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.total .k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.total .v{font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:-.04em}
+.panel .enviar{width:100%;height:48px;border-radius:14px;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.cobrar{margin-top:8px;width:100%}
+
+/* ============ cocina ============ */
+.filtros{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.seg{display:flex;gap:4px;padding:4px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{white-space:nowrap;flex:0 0 auto}
+.seg button{
+  height:32px;padding:0 15px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);transition:all .15s;
+}
+.seg button:hover{color:var(--text-2)}
+.seg button[aria-selected="true"]{background:var(--text);color:#101216}
+.seg button .n{font-family:var(--mono);font-size:9.5px;margin-left:6px;opacity:.7}
+
+.cola{display:grid;grid-template-columns:repeat(auto-fill,minmax(318px,1fr));gap:13px;align-items:start}
+.tk{
+  position:relative;padding:16px 17px;border-radius:20px;border:1px solid var(--line);
+  background:linear-gradient(170deg,#15181F,#101318);display:flex;flex-direction:column;gap:11px;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.tk:hover{transform:translateY(-2px);box-shadow:0 22px 44px rgba(0,0,0,.48)}
+.tk[data-est="nueva"]{border-color:rgba(167,139,250,.3)}
+.tk[data-est="fuego"]{border-color:rgba(245,185,66,.32)}
+.tk[data-est="listo"]{border-color:rgba(87,217,163,.26)}
+.tk.late{border-color:rgba(255,98,80,.55);box-shadow:0 0 0 1px rgba(255,98,80,.28),0 20px 40px rgba(0,0,0,.45)}
+.tk .cab{display:flex;align-items:flex-start;gap:12px}
+.tk .folio{font-family:var(--mono);font-size:18px;font-weight:500;letter-spacing:-.02em;line-height:1}
+.tk .meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:5px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.tk .meta .punto{width:3px;height:3px;border-radius:50%;background:#42454F}
+.tk .mesa-tag{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--text-2)}
+.tk .reloj{margin-left:auto;position:relative;width:56px;height:56px;flex:0 0 auto}
+.tk .reloj svg{transform:rotate(-90deg)}
+.tk .reloj .pista{stroke:rgba(255,255,255,.09);fill:none;stroke-width:4}
+.tk .reloj .arco{fill:none;stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .5s linear,stroke .3s}
+.tk .reloj .t{
+  position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:10px;letter-spacing:-.02em;
+}
+.tk .estado{
+  display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-size:8.5px;letter-spacing:.15em;
+  text-transform:uppercase;font-weight:600;padding:3px 9px;border-radius:999px;
+}
+.tk[data-est="nueva"] .estado{background:rgba(167,139,250,.16);color:#C7B6FF}
+.tk[data-est="fuego"] .estado{background:rgba(245,185,66,.16);color:var(--gold-2)}
+.tk[data-est="listo"] .estado{background:rgba(87,217,163,.15);color:#8FF0C6}
+.tk .partidas{border-top:1px solid var(--line);padding-top:2px;display:flex;flex-direction:column;gap:9px}
+.grupo-est .ge{
+  display:flex;justify-content:space-between;font-family:var(--mono);font-size:8.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:#63656F;margin-bottom:4px;
+}
+.grupo-est .li{display:grid;grid-template-columns:17px 1fr;gap:6px;font-size:12.5px;line-height:1.4;padding:1px 0}
+.grupo-est .li b{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--gold-2)}
+.grupo-est .mod{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;color:#E0A9A0;
+  border-left:2px solid var(--hot);padding-left:7px;margin:3px 0 4px 23px;line-height:1.6;
+}
+.grupo-est .mod.nota{color:#8E909B;border-color:#4A4D57;font-style:italic;text-transform:none;font-family:var(--sans);font-size:10.5px}
+.tk .acciones{display:flex;gap:7px;margin-top:2px}
+.tk .acciones .btn{flex:1}
+
+/* ============ productos ============ */
+.cat-grupo{margin-bottom:26px}
+.cat-grupo .cab{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.cat-grupo h3{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--text-2)}
+.cat-grupo .pase{font-family:var(--mono);font-size:9px;color:var(--muted);padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.05)}
+.cat-grupo .regla{flex:1;height:1px;background:var(--line)}
+.cat-platos{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.cat-plato{
+  padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.025);
+  display:flex;flex-direction:column;gap:7px;
+}
+.cat-plato .fila1{display:flex;align-items:baseline;gap:10px}
+.cat-plato .n{font-size:13px;font-weight:500}
+.cat-plato .p{font-family:var(--mono);font-size:11.5px;margin-left:auto;color:var(--text-2)}
+.cat-plato .d{font-size:11px;color:var(--muted);line-height:1.45}
+.cat-plato .m{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.cat-plato .m .t{font-family:var(--mono);font-size:9.5px;color:#63656F;margin-right:2px}
+
+/* ============ capa / hojas ============ */
+.capa{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(5,6,8,.66);backdrop-filter:blur(8px)}
+.capa.on{display:flex;animation:aparece .18s ease both}
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+.hoja{
+  width:min(520px,100%);max-height:min(88dvh,760px);display:flex;flex-direction:column;
+  border-radius:26px;border:1px solid var(--line-2);background:linear-gradient(180deg,#191C24,#111319);
+  box-shadow:var(--shadow);overflow:hidden;animation:sube .24s cubic-bezier(.22,.9,.28,1) both;
+}
+@keyframes sube{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:none}}
+.hoja .cab{display:flex;align-items:flex-start;gap:12px;padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+.hoja .cab h2{font-size:18px;font-weight:600;letter-spacing:-.02em;line-height:1.2}
+.hoja .cab .sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:5px;letter-spacing:.03em}
+.hoja .cerrar{
+  margin-left:auto;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;
+  background:rgba(255,255,255,.05);color:var(--text-2);transition:all .15s;
+}
+.hoja .cerrar:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.hoja .cerrar svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.hoja .cuerpo{padding:18px 22px 22px;overflow-y:auto;display:flex;flex-direction:column;gap:18px;scrollbar-width:thin;scrollbar-color:#2A2E38 transparent}
+.hoja .cuerpo::-webkit-scrollbar{width:8px}
+.hoja .cuerpo::-webkit-scrollbar-thumb{background:#262A33;border-radius:8px}
+.grupo .l{display:block;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.opciones{display:flex;flex-wrap:wrap;gap:6px}
+.op{
+  height:31px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);
+  font-size:11.5px;color:var(--text-2);display:inline-flex;align-items:center;gap:6px;transition:all .15s;
+}
+.op:hover{border-color:var(--line-2);color:var(--text)}
+.op[aria-pressed="true"]{background:var(--text);border-color:var(--text);color:#101216}
+.op[aria-pressed="true"] svg{stroke:#101216}
+.op svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;display:none}
+.op[aria-pressed="true"] svg{display:block}
+.op[data-opt="urgente"][aria-pressed="true"]{background:rgba(255,98,80,.16);border-color:rgba(255,98,80,.5);color:#FFB7AD}
+.op[data-opt="urgente"][aria-pressed="true"] svg{stroke:#FFB7AD}
+.doble{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea.nota{
+  width:100%;min-height:74px;resize:vertical;border-radius:14px;border:1px solid var(--line);
+  background:rgba(255,255,255,.035);padding:11px 12px;font-size:12px;line-height:1.5;outline:none;
+}
+textarea.nota:focus{border-color:rgba(245,185,66,.5)}
+.cantidad{display:flex;align-items:center;gap:10px}
+.cantidad .ctrl{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.cantidad .ctrl button{width:38px;height:38px;display:grid;place-items:center;color:var(--text-2);transition:background .15s}
+.cantidad .ctrl button:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.cantidad .ctrl svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+.cantidad .ctrl span{width:42px;text-align:center;font-family:var(--mono);font-size:14px}
+.cantidad .quitar{margin-left:auto;font-size:11px;color:#FF8F80;text-decoration:underline;text-underline-offset:3px}
+.hoja .pie{flex:0 0 auto;display:flex;gap:10px;padding:16px 22px;border-top:1px solid var(--line);background:rgba(255,255,255,.015)}
+.hoja .pie .btn{flex:1;height:44px}
+
+/* ============ ticket impreso ============ */
+.ticket{
+  width:312px;background:#FFFDF8;color:#111;font-family:var(--mono);font-size:11px;line-height:1.45;
+  border-radius:6px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.5);
+}
+.tk-cab{background:#111;color:#fff;padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.tk-cab .marca{font-family:var(--sans);font-weight:700;letter-spacing:.26em;font-size:12px}
+.tk-cab .tipo{font-family:var(--sans);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.tk-cuerpo{padding:14px}
+.tk-folio{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px}
+.tk-folio b{font-family:var(--sans);font-size:26px;letter-spacing:-.03em;line-height:1}
+.tk-folio span{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:#777}
+.tk-datos{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:10px;margin-bottom:10px}
+.tk-datos dt{color:#666;text-transform:uppercase;letter-spacing:.07em}
+.tk-datos dd{text-align:right;font-weight:500}
+.tk-sep{border-top:1px dashed #AAA;margin:10px 0}
+.tk-est{margin-bottom:9px}
+.tk-est .cab{display:flex;justify-content:space-between;font-size:8px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border-bottom:1.5px solid #111;padding-bottom:2px;margin-bottom:4px}
+.tk-li{display:grid;grid-template-columns:17px 1fr auto;gap:6px;align-items:baseline;padding:1px 0}
+.tk-li .c{font-weight:600}
+.tk-li .t{font-size:9px;color:#666}
+.tk-mod{margin:2px 0 5px 23px;border-left:3px solid #111;padding:2px 0 2px 7px;font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;line-height:1.55}
+.tk-mod .al{background:#111;color:#fff;padding:1px 4px}
+.tk-nota{margin-left:23px;font-size:9px;font-style:italic;color:#333}
+.tk-pie{border-top:1.5px solid #111;margin-top:10px;padding-top:7px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:9.5px}
+.tk-pie dt{text-transform:uppercase;letter-spacing:.07em;color:#666}
+.tk-pie dd{text-align:right;font-weight:500}
+.sello-tk{
+  margin:14px auto 4px;width:86px;height:86px;border:2.5px solid #C4331C;border-radius:50%;
+  display:grid;place-items:center;text-align:center;color:#C4331C;transform:rotate(-8deg);
+  font-family:var(--sans);font-size:8.5px;font-weight:700;letter-spacing:.16em;line-height:1.6;text-transform:uppercase;
+}
+.modal-ticket .hoja{background:none;border:0;box-shadow:none;width:auto;max-height:100%;overflow:visible}
+.modal-ticket .cuerpo{padding:0;overflow:visible;align-items:center;gap:16px}
+.modal-ticket .acciones{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
+/* ============ avisos ============ */
+.toast{
+  position:fixed;left:26px;bottom:26px;z-index:80;display:flex;align-items:center;gap:10px;
+  padding:12px 16px;border-radius:14px;border:1px solid var(--line-2);border-left:2px solid var(--gold);
+  background:#171A21;box-shadow:var(--shadow);font-size:12px;max-width:min(380px,80vw);
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s;
+}
+.toast.on{opacity:1;transform:none}
+.toast svg{width:15px;height:15px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;flex:0 0 auto}
+
+.cargando{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:var(--bg);gap:14px}
+.cargando .anillo{width:44px;height:44px;border-radius:50%;border:2px solid rgba(245,185,66,.18);border-top-color:var(--gold);animation:gira .9s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.cargando p{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+
+/* móvil: barra inferior + comanda como hoja */
+.fab{display:none}
+@media (max-width:1180px){
+  .app{grid-template-columns:78px minmax(0,1fr) 340px}
+  body[data-vista="cocina"] .app{grid-template-columns:78px minmax(0,1fr) 0}
+  .mesas{grid-template-columns:repeat(auto-fill,minmax(132px,1fr))}
+  .resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:1024px){
+  .app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 62px;height:100dvh}
+  body[data-vista="cocina"] .app{grid-template-columns:1fr}
+  .rail{
+    grid-row:2;flex-direction:row;gap:4px;padding:6px 10px calc(6px + env(safe-area-inset-bottom));
+    border-right:0;border-top:1px solid var(--line);justify-content:space-around;
+  }
+  .rail .sello,.rail .pie{display:none}
+  .rail nav{flex-direction:row;gap:4px}
+  .rail .v{padding:6px 4px 4px;border-radius:12px;gap:3px}
+  .rail .v span{font-size:8px}
+  .rail .v .pip{top:2px;right:calc(50% - 20px)}
+  .stage{grid-row:1;min-height:0}
+  .vista{padding:18px 16px 90px}
+  .bar{padding:12px 16px}
+  .bar h1{font-size:18px}
+  .panel{
+    position:fixed;left:0;right:0;bottom:0;top:auto;z-index:45;max-height:86dvh;
+    border-left:0;border-top:1px solid var(--line-2);border-radius:24px 24px 0 0;
+    background:#101319;transform:translateY(102%);transition:transform .26s cubic-bezier(.22,.9,.28,1);
+    box-shadow:0 -30px 60px rgba(0,0,0,.6);padding-bottom:env(safe-area-inset-bottom);
+  }
+  body.carrito .panel{transform:none}
+  body[data-vista="cocina"] .fab{display:none}
+  .panel .cab{padding:14px 16px 12px}
+  .panel .cierre{padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+  .panel .cerrar-panel{display:grid;margin-left:8px}
+  body.puede-fab .fab{display:flex}
+  .fab{
+    position:fixed;right:16px;bottom:76px;z-index:44;align-items:center;gap:10px;
+    height:50px;padding:0 18px;border-radius:999px;background:linear-gradient(160deg,var(--gold-2),var(--gold));
+    color:#251803;font-weight:600;font-size:12px;box-shadow:0 16px 34px rgba(0,0,0,.5);
+  }
+  .fab .n{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,.18);padding:2px 7px;border-radius:999px}
+  .capa{padding:0;align-items:flex-end}
+  .hoja{width:100%;max-height:92dvh;border-radius:24px 24px 0 0;border-bottom:0}
+  .cola{grid-template-columns:1fr}
+  .platos{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+}
+@media (min-width:1025px){.panel .cerrar-panel{display:none}}
+@media (max-width:620px){
+  .bar .der .pildora{display:none}
+  .bar .der .pildora.viva{display:flex}
+  .resumen{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .metrica .v{font-size:17px}
+  .metrica{padding:12px 13px}
+  .mesas{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .mesa{min-height:112px;padding:12px}
+  .mesa .n{font-size:26px}
+  .miga .acc{margin-left:0;width:100%;justify-content:space-between}
+  .buscador{flex:1}
+  .platos{grid-template-columns:1fr}
+  .doble{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* impresión 80 mm */
+#print-root{display:none}
+@media print{
+  @page{size:80mm 250mm;margin:3mm}
+  html,body{background:#fff!important;height:auto!important;overflow:visible!important;display:block!important}
+  body::before,body::after{display:none!important}
+  body>*:not(#print-root){display:none!important}
+  #print-root{display:block!important}
+  .ticket{width:72mm;border-radius:0;box-shadow:none}
+  .tk-cab{padding:6px 0;background:#000}
+  .tk-cuerpo{padding:8px 0}
+  .sello-tk{width:70px;height:70px;border-color:#000;color:#000}
+}
+</style>
+</head>
+<body data-vista="sala" data-salon="piso">
+
+<div class="app">
+
+  <!-- ===== raíl ===== -->
+  <aside class="rail">
+    <div class="sello" aria-hidden="true">K</div>
+    <nav role="tablist" aria-label="Vistas">
+      <button class="v" role="tab" data-vista="sala" aria-selected="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10m16 10V10M2 20h20M7 20v-6h4v6M7 9a2 2 0 100-4 2 2 0 000 4z"/></svg>
+        <span>Salón</span>
+      </button>
+      <button class="v" role="tab" data-vista="cocina" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10l1.4 1.4m0-12.8l-1.4 1.4m-10 10l-1.4 1.4"/><circle cx="12" cy="12" r="3.2"/></svg>
+        <span>Cocina</span>
+        <i class="pip" id="pip-cocina" hidden></i>
+      </button>
+      <button class="v" role="tab" data-vista="carta" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+        <span>Productos</span>
+      </button>
+    </nav>
+    <div class="pie">
+      <span class="h" id="reloj">--:--</span>
+      <span class="d">turno</span>
+    </div>
+  </aside>
+
+  <!-- ===== escenario ===== -->
+  <main class="stage">
+    <header class="bar">
+      <div class="t">
+        <h1 id="titulo">Salón</h1>
+        <div class="sub" id="subtitulo">Elige una mesa para abrir su comanda</div>
+      </div>
+      <div class="der" id="barra-der"></div>
+    </header>
+
+    <div class="scroll" id="scroll">
+
+      <!-- ===== SALÓN ===== -->
+      <section class="vista on" id="v-sala">
+        <!-- piso -->
+        <div id="piso">
+          <div class="resumen" id="resumen"></div>
+          <div class="bloque-cab">
+            <h2>Plano de sala</h2>
+            <span class="regla"></span>
+            <span class="r" id="piso-nota">20 mesas</span>
+          </div>
+          <div class="mesas" id="mesas"></div>
+        </div>
+
+        <!-- carta de la mesa -->
+        <div id="menu" hidden>
+          <div class="miga">
+            <button class="volver" data-acc="volver" aria-label="Volver al plano">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+            </button>
+            <label class="buscador">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+              <input id="buscar" type="search" placeholder="Buscar en la carta…" autocomplete="off" aria-label="Buscar platillo">
+            </label>
+          </div>
+          <div class="chips" id="chips" role="tablist" aria-label="Categorías"></div>
+          <div class="platos" id="platos"></div>
+        </div>
+      </section>
+
+      <!-- ===== COCINA ===== -->
+      <section class="vista" id="v-cocina">
+        <div class="filtros" id="filtros"></div>
+        <div class="cola" id="cola"></div>
+      </section>
+
+      <!-- ===== PRODUCTOS ===== -->
+      <section class="vista" id="v-carta">
+        <div class="bloque-cab">
+          <h2>Catálogo</h2>
+          <span class="regla"></span>
+          <span class="r" id="cat-nota"></span>
+        </div>
+        <div id="catalogo"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== panеl de comanda ===== -->
+  <aside class="panel" id="panel" aria-label="Comanda">
+    <div class="cab">
+      <h2>Comanda</h2>
+      <span class="mesa-chip vacia" id="chip-mesa">sin mesa</span>
+      <button class="cerrar cerrar-panel" data-acc="cerrar-panel" aria-label="Cerrar comanda">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="ajustes">
+      <div class="campo">
+        <label for="pax">Comensales</label>
+        <div class="pax">
+          <button data-acc="pax" data-d="-1" aria-label="Menos comensales"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+          <span id="pax">2</span>
+          <button data-acc="pax" data-d="1" aria-label="Más comensales"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="mesero">Mesero</label>
+        <select class="sel" id="mesero"></select>
+      </div>
+    </div>
+    <div class="lineas" id="lineas"></div>
+    <div class="estaciones" id="estaciones"></div>
+    <div class="cierre">
+      <div class="total"><span class="k">Total</span><span class="v" id="total">$0.00</span></div>
+      <button class="btn oro enviar" id="btn-mandar" data-acc="mandar" disabled>Mandar a cocina</button>
+      <div id="cobrar-wrap"></div>
+    </div>
+  </aside>
+
+</div>
+
+<button class="fab" id="fab" data-acc="abrir-panel" aria-label="Abrir comanda">
+  <span>Comanda</span><span class="n" id="fab-n">0</span>
+</button>
+
+<div class="capa" id="capa"><div id="capa-hijo"></div></div>
+<div id="print-root"></div>
+<div class="toast" id="toast"></div>
+
+<div class="cargando" id="cargando">
+  <div class="anillo"></div>
+  <p>Cargando carta</p>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   Estado
+   ============================================================ */
+var A = {
+  vista: 'sala',
+  salon: 'piso',          // piso | menu
+  filtroCocina: 'todas',
+  categoria: 'picar',
+  busqueda: '',
+  carta: [],
+  porId: {},
+  meseros: [],
+  comandas: [],
+  mesa: null,
+  pax: 2,
+  mesero: '',
+  carrito: [],
+  borradores: {},
+  editando: null,
+  ticket: null,
+  cargando: false
+};
+
+var CAT = {
+  picar:  { n: 'Para picar', corto: 'PICAR',  pase: 1, ord: 2, tk: '1er tiempo · para picar' },
+  sushi:  { n: 'Sushi',      corto: 'SUSHI',  pase: 2, ord: 3, tk: '2º tiempo · sushi' },
+  robata: { n: 'Robata',     corto: 'ROBATA', pase: 2, ord: 4, tk: '2º tiempo · robata' },
+  ramen:  { n: 'Ramen',      corto: 'RAMEN',  pase: 3, ord: 5, tk: '3er tiempo · ramen' },
+  postre: { n: 'Postres',    corto: 'POSTRE', pase: 4, ord: 6, tk: 'Postre' },
+  barra:  { n: 'Barra',      corto: 'BARRA',  pase: 0, ord: 1, tk: 'Barra · al momento' }
+};
+var ORDEN_CAT = ['picar', 'sushi', 'robata', 'ramen', 'postre', 'barra'];
+var TERMINOS = ['Rojo', 'Medio rojo', 'Término medio', '3/4', 'Bien cocido'];
+var ALERGIAS = ['', 'Gluten', 'Lácteos', 'Mariscos', 'Cacahuate', 'Nuez', 'Huevo', 'Soya', 'Frijol de soya', 'Otra (ver nota)'];
+
+/* ============================================================
+   Utilidades
+   ============================================================ */
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+function dinero(n) { return '$' + Number(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function dos(n) { return (n < 10 ? '0' : '') + n; }
+function hhmmss(ts) { var d = new Date(ts); return dos(d.getHours()) + ':' + dos(d.getMinutes()) + ':' + dos(d.getSeconds()); }
+function hhmm(ts) { var d = new Date(ts); return dos(d.getHours()) + ':' + dos(d.getMinutes()); }
+function mmss(seg) { seg = Math.max(0, Math.floor(seg)); return Math.floor(seg / 60) + ':' + dos(seg % 60); }
+function uid() { return 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function icono(nombre) {
+  var p = {
+    mas: '<path d="M12 5v14M5 12h14"/>',
+    menos: '<path d="M5 12h14"/>',
+    check: '<path d="M4 12.5l5 5L20 6.5"/>',
+    flecha: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    campana: '<path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 19a2 2 0 004 0"/>',
+    ticket: '<path d="M4 6h16v5a2 2 0 000 4v5H4v-5a2 2 0 000-4V6z"/><path d="M9 6v12"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18"/>'
+  };
+  return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (p[nombre] || '') + '</svg>';
+}
+var toastT;
+function toast(txt) {
+  var el = $('#toast');
+  el.innerHTML = icono('campana') + '<span>' + esc(txt) + '</span>';
+  el.classList.add('on');
+  clearTimeout(toastT);
+  toastT = setTimeout(function () { el.classList.remove('on'); }, 2800);
+}
+
+/* ============================================================
+   Puente Apps Script
+   ============================================================ */
+function llamar(fn, args) {
+  return new Promise(function (res, rej) {
+    if (!window.google || !google.script || !google.script.run) {
+      rej(new Error('Abre esta interfaz como aplicación web de Apps Script.'));
+      return;
+    }
+    var runner = google.script.run.withSuccessHandler(res).withFailureHandler(function (e) {
+      rej(new Error(e && e.message ? e.message : String(e)));
+    });
+    runner[fn].apply(runner, args === undefined ? [] : [args]);
+  });
+}
+
+/* ============================================================
+   Cálculos
+   ============================================================ */
+function pases() {
+  var m = [];
+  A.carrito.forEach(function (l) {
+    var p = A.porId[l.id];
+    if (!p) return;
+    var g = null;
+    for (var i = 0; i < m.length; i++) { if (m[i].cat === p.c) { g = m[i]; break; } }
+    if (!g) { g = { cat: p.c, items: [], max: 0 }; m.push(g); }
+    g.items.push(l);
+    if (p.m > g.max) g.max = p.m;
+  });
+  m.sort(function (a, b) { return CAT[a.cat].ord - CAT[b.cat].ord; });
+  return m;
+}
+
+function minutosSalida() {
+  var porPase = {};
+  A.carrito.forEach(function (l) {
+    var p = A.porId[l.id]; if (!p) return;
+    var c = CAT[p.c]; if (!c || c.pase < 1) return;
+    if (!porPase[c.pase] || p.m > porPase[c.pase]) porPase[c.pase] = p.m;
+  });
+  return Object.keys(porPase).reduce(function (a, k) { return a + porPase[k]; }, 0);
+}
+
+function total() {
+  return A.carrito.reduce(function (a, l) { return a + A.porId[l.id].p * l.qty; }, 0);
+}
+
+function unidades() {
+  return A.carrito.reduce(function (a, l) { return a + l.qty; }, 0);
+}
+
+function modificaciones(l) {
+  var out = [];
+  if (l.termino) out.push(/^t[ée]rmino/i.test(l.termino) ? l.termino : 'Término ' + l.termino.toLowerCase());
+  (l.op || []).forEach(function (o) { out.push(o); });
+  if (l.alergia) out.push('Alergia: ' + l.alergia);
+  if (l.urgente) out.push('Prioridad alta');
+  return out;
+}
+
+function agrupar(items) {
+  var m = [];
+  items.forEach(function (l) {
+    var g = null;
+    for (var i = 0; i < m.length; i++) { if (m[i].cat === l.categoria) { g = m[i]; break; } }
+    if (!g) { g = { cat: l.categoria, items: [], max: 0 }; m.push(g); }
+    g.items.push(l);
+    if (l.minutos > g.max) g.max = l.minutos;
+  });
+  m.sort(function (a, b) { return (CAT[a.cat] ? CAT[a.cat].ord : 9) - (CAT[b.cat] ? CAT[b.cat].ord : 9); });
+  return m;
+}
+
+function minutos(items) {
+  var porPase = {};
+  items.forEach(function (l) {
+    var c = CAT[l.categoria]; if (!c || c.pase < 1) return;
+    if (!porPase[c.pase] || l.minutos > porPase[c.pase]) porPase[c.pase] = l.minutos;
+  });
+  return Object.keys(porPase).reduce(function (a, k) { return a + porPase[k]; }, 0);
+}
+
+function pasesDe(items) {
+  var s = {};
+  items.forEach(function (l) { var c = CAT[l.categoria]; if (c && c.pase > 0) s[c.pase] = 1; });
+  return Object.keys(s).length;
+}
+
+function comandasDeMesa(n) {
+  return A.comandas.filter(function (c) { return Number(c.mesa) === Number(n); });
+}
+
+/* ============================================================
+   Cabecera
+   ============================================================ */
+function dibujarCabecera() {
+  var t = { sala: 'Salón', cocina: 'Cocina', carta: 'Productos' }[A.vista];
+  $('#titulo').textContent = A.salon === 'menu' && A.vista === 'sala' ? 'Mesa ' + dos(A.mesa) : t;
+
+  var sub = '';
+  if (A.vista === 'sala' && A.salon === 'menu') {
+    sub = '<span>' + A.pax + ' comensales</span><span class="dot"></span><span>' + esc(A.mesero || 'sin mesero') + '</span>';
+  } else if (A.vista === 'sala') {
+    var ocupadas = mesasOcupadas();
+    sub = '<span>' + ocupadas + ' de 20 mesas con cuenta abierta</span><span class="dot"></span><span>' + A.comandas.length + ' comandas activas</span>';
+  } else if (A.vista === 'cocina') {
+    var n = A.comandas.filter(function (c) { return c.estado !== 'listo'; }).length;
+    sub = '<span>' + n + ' en línea</span><span class="dot"></span><span>Se actualiza sola</span>';
+  } else {
+    sub = '<span>' + A.carta.length + ' productos en carta</span><span class="dot"></span><span>Editar en Code.gs</span>';
+  }
+  $('#subtitulo').innerHTML = sub;
+
+  var der = '';
+  if (A.vista === 'sala' && A.salon === 'menu') {
+    var mins = minutosSalida();
+    var tmesa = totalMesa(A.mesa);
+    der = (mins ? '<span class="pildora viva"><span class="k">Salida</span><span class="v">≈ ' + mins + ' min</span></span>' : '') +
+          (tmesa ? '<span class="pildora"><span class="k">Mesa</span><span class="v">' + dinero(tmesa) + '</span></span>' : '');
+  } else if (A.vista === 'sala') {
+    der = '<span class="pildora"><span class="k">Caja</span><span class="v">' + dinero(totalSala()) + '</span></span>';
+  } else if (A.vista === 'cocina') {
+    der = '<span class="pildora viva"><span class="k">Ahora</span><span class="v" id="reloj-cocina">' + hhmmss(Date.now()) + '</span></span>';
+  }
+  $('#barra-der').innerHTML = der;
+}
+
+function mesasOcupadas() {
+  var s = {};
+  A.comandas.forEach(function (c) { s[c.mesa] = 1; });
+  if (A.carrito.length && A.mesa) s[A.mesa] = 1;
+  return Object.keys(s).length;
+}
+
+function totalMesa(n) {
+  var t = A.comandas.filter(function (c) { return Number(c.mesa) === Number(n); })
+    .reduce(function (a, c) { return a + Number(c.total || 0); }, 0);
+  if (A.mesa === n) t += total();
+  return t;
+}
+
+function totalSala() {
+  return A.comandas.reduce(function (a, c) { return a + Number(c.total || 0); }, 0);
+}
+
+/* ============================================================
+   Salón · piso
+   ============================================================ */
+function dibujarPiso() {
+  var ocupadas = 0, libres = 0, cuentas = 0;
+  for (var n = 1; n <= 20; n++) {
+    var cs = comandasDeMesa(n);
+    if (cs.length) { ocupadas++; cuentas += cs.length; } else libres++;
+  }
+
+  $('#resumen').innerHTML =
+    metrica('Mesas libres', libres, 'ok') +
+    metrica('Con cuenta', ocupadas, 'oro') +
+    metrica('Comandas activas', A.comandas.length) +
+    metrica('En sala', dinero(totalSala()).replace('$', '$'));
+
+  var html = '';
+  for (var i = 1; i <= 20; i++) {
+    var cs2 = comandasDeMesa(i);
+    var enCurso = A.carrito.length && A.mesa === i;
+    var estado = cs2.length ? 'ocupada' : (enCurso ? 'captura' : 'libre');
+    var total = cs2.reduce(function (a, c) { return a + Number(c.total || 0); }, 0);
+    var desde = cs2.length ? Math.max(0, Math.round((Date.now() - Math.min.apply(null, cs2.map(function (c) { return Number(c.ts); }))) / 60000)) : 0;
+    var etiqueta = cs2.length ? (cs2.length + (cs2.length > 1 ? ' comandas' : ' comanda')) : (enCurso ? 'en captura' : 'libre');
+    html += '<button class="mesa" data-mesa="' + i + '" data-estado="' + estado + '" aria-label="Mesa ' + i + ', ' + etiqueta + (total ? ', ' + dinero(total) : '') + '">' +
+      '<span class="marca-sel">' + icono('check') + '</span>' +
+      '<div class="m-top"><span class="n">' + dos(i) + '</span>' +
+        '<span class="et">' + (desde ? 'hace ' + desde + ' min' : (cs2.length ? 'ahora' : '')) + '</span></div>' +
+      '<div class="pie">' +
+        '<span class="est"><i class="pt"></i>' + etiqueta + '</span>' +
+        (cs2.length ? '<span class="cifras"><b>' + dinero(total) + '</b>' + (cs2[0].comensales ? ' · ' + cs2[0].comensales + ' pax' : '') + '</span>'
+                    : '<span class="cifras">' + (enCurso ? unidades() + ' partidas en captura' : '&nbsp;') + '</span>') +
+      '</div>' +
+    '</button>';
+  }
+  $('#mesas').innerHTML = html;
+  $('#piso-nota').textContent = '20 mesas · ' + ocupadas + ' con cuenta';
+}
+
+function metrica(k, v, tono) {
+  return '<div class="metrica ' + (tono || '') + '"><span class="k">' + k + '</span>' +
+    '<span class="v">' + v + '</span></div>';
+}
+
+/* ============================================================
+   Salón · carta de la mesa
+   ============================================================ */
+function dibujarChips() {
+  $('#chips').innerHTML = ORDEN_CAT.map(function (c) {
+    var n = A.carta.filter(function (p) { return p.c === c; }).length;
+    return '<button class="chip" role="tab" data-cat="' + c + '" aria-selected="' + (A.categoria === c) + '">' +
+      CAT[c].n + '<span class="c">' + n + '</span></button>';
+  }).join('');
+}
+
+function dibujarPlatos() {
+  var q = A.busqueda.trim().toLowerCase();
+  var lista = A.carta.filter(function (p) {
+    if (q) return (p.n + ' ' + (p.d || '') + ' ' + p.op.join(' ')).toLowerCase().indexOf(q) >= 0;
+    return p.c === A.categoria;
+  });
+
+  if (!lista.length) {
+    $('#platos').innerHTML = '<div class="vacio" style="grid-column:1/-1">' + icono('ticket') +
+      '<b>Sin resultados</b><span>Prueba con otro término o cambia de categoría.</span></div>';
+    return;
+  }
+
+  $('#platos').innerHTML = lista.map(function (p) {
+    var enCarrito = A.carrito.filter(function (l) { return l.id === p.id; }).reduce(function (a, l) { return a + l.qty; }, 0);
+    return '<button class="plato" data-add="' + p.id + '" aria-label="Agregar ' + esc(p.n) + '">' +
+      '<div class="top"><h3>' + esc(p.n) + '</h3></div>' +
+      (p.d ? '<p class="desc">' + esc(p.d) + '</p>' : '') +
+      '<div class="tags">' +
+        (p.veg ? '<span class="tag veg">vegetariano</span>' : '') +
+        (p.term ? '<span class="tag">término</span>' : '') +
+      '</div>' +
+      '<div class="pie">' +
+        '<span class="mins"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>' + p.m + ' min</span>' +
+        (enCarrito ? '<span class="cuenta">×' + enCarrito + '</span>' : '') +
+        '<span class="precio">' + dinero(p.p) + '</span>' +
+        '<span class="suma">' + icono('mas') + '</span>' +
+      '</div>' +
+    '</button>';
+  }).join('');
+}
+
+function dibujarMiga() {
+  /* el cobro vive en el panel de comanda para no duplicar acciones */
+}
+
+/* ============================================================
+   Panel de comanda
+   ============================================================ */
+function dibujarPanel() {
+  var chip = $('#chip-mesa');
+  chip.textContent = A.mesa ? 'mesa ' + dos(A.mesa) : 'sin mesa';
+  chip.classList.toggle('vacia', !A.mesa);
+
+  $('#pax').textContent = A.pax;
+  $('#total').textContent = dinero(total());
+  $('#btn-mandar').disabled = !(A.mesa && A.carrito.length);
+
+  var n = unidades();
+  $('#fab-n').textContent = n;
+  document.body.classList.toggle('puede-fab', !!(A.mesa && A.vista !== 'cocina'));
+  $('#fab').setAttribute('aria-hidden', String(!(A.mesa && A.vista !== 'cocina')));
+
+  var cs = A.mesa ? comandasDeMesa(A.mesa) : [];
+  $('#cobrar-wrap').innerHTML = cs.length
+    ? '<button class="btn mini rojo cobrar" data-acc="cobrar">Cobrar ' + cs.length + ' comanda' + (cs.length > 1 ? 's' : '') + ' · ' + dinero(totalMesa(A.mesa)) + '</button>'
+    : '';
+
+  if (!A.carrito.length) {
+    $('#lineas').innerHTML = '<div class="vacio">' + icono('ticket') +
+      '<b>' + (A.mesa ? 'Comanda vacía' : 'Ninguna mesa elegida') + '</b>' +
+      '<span>' + (A.mesa ? 'Toca un platillo de la carta para agregarlo.' : 'Elige una mesa del plano para empezar.') + '</span></div>';
+  } else {
+    $('#lineas').innerHTML = A.carrito.map(function (l) {
+      var p = A.porId[l.id];
+      var mods = (l.op || []).map(function (o) { return '<i>' + esc(o) + '</i>'; }).join('');
+      if (l.termino) mods = '<i>' + esc(/^t[ée]rmino/i.test(l.termino) ? l.termino : 'Término ' + l.termino.toLowerCase()) + '</i>' + mods;
+      if (l.alergia) mods += '<i class="al">Alergia: ' + esc(l.alergia) + '</i>';
+      if (l.urgente) mods += '<i class="ur">Prioridad</i>';
+      return '<button class="linea" data-editar="' + l.uid + '">' +
+        '<span class="q">' + l.qty + '×</span>' +
+        '<span><span class="nom">' + esc(p.n) + '</span>' +
+          (mods ? '<span class="mods">' + mods + '</span>' : '') +
+          (l.nota ? '<span class="nota">“' + esc(l.nota) + '”</span>' : '') +
+        '</span>' +
+        '<span class="pt">' + dinero(p.p * l.qty) + '</span>' +
+      '</button>';
+    }).join('');
+  }
+
+  var g = pases();
+  $('#estaciones').hidden = !g.length;
+  if (!g.length) {
+    $('#estaciones').innerHTML = '';
+  } else {
+    var max = Math.max.apply(null, g.map(function (x) { return x.max; })) || 1;
+    $('#estaciones').innerHTML = g.map(function (x) {
+      var w = Math.max(6, Math.round((x.max / max) * 100));
+      return '<div class="est"><span>' + CAT[x.cat].corto + '</span>' +
+        '<span class="pista"><i class="' + (x.max >= 18 ? 'hot' : '') + '" style="width:' + w + '%"></i></span>' +
+        '<span class="t">' + x.max + "'</span></div>";
+    }).join('');
+  }
+
+  dibujarMiga();
+  dibujarCabecera();
+}
+
+/* ============================================================
+   Cocina
+   ============================================================ */
+function dibujarCocina() {
+  var todas = A.comandas.slice();
+  var nuevas = todas.filter(function (c) { return c.estado === 'nueva'; });
+  var fuego = todas.filter(function (c) { return c.estado === 'fuego'; });
+  var listas = todas.filter(function (c) { return c.estado === 'listo'; });
+
+  $('#pip-cocina').hidden = !nuevas.length;
+  $('#pip-cocina').textContent = nuevas.length || '';
+
+  var filtro = A.filtroCocina;
+  var vista = filtro === 'todas' ? todas : (filtro === 'nueva' ? nuevas : (filtro === 'fuego' ? fuego : listas));
+
+  $('#filtros').innerHTML =
+    '<div class="seg" role="tablist" aria-label="Filtrar comandas">' +
+      botonFiltro('todas', 'Todas', todas.length) +
+      botonFiltro('nueva', 'Nuevas', nuevas.length) +
+      botonFiltro('fuego', 'En fuego', fuego.length) +
+      botonFiltro('listo', 'Listas', listas.length) +
+    '</div>' +
+    '<div style="margin-left:auto;display:flex;gap:8px">' +
+      '<span class="pildora"><span class="k">En línea</span><span class="v">' + (nuevas.length + fuego.length) + '</span></span>' +
+      '<span class="pildora"><span class="k">Medio</span><span class="v">' + tiempoMedio(todas) + '</span></span>' +
+    '</div>';
+
+  if (!vista.length) {
+    $('#cola').innerHTML = '<div class="vacio" style="grid-column:1/-1;padding:70px 20px">' + icono('campana') +
+      '<b>Sin comandas en este filtro</b><span>Cuando entre una comanda aparecerá aquí con su cronómetro.</span></div>';
+    return;
+  }
+
+  var peso = { nueva: 0, fuego: 1, listo: 2 };
+  vista.sort(function (a, b) {
+    if (peso[a.estado] !== peso[b.estado]) return peso[a.estado] - peso[b.estado];
+    return b.ts - a.ts;
+  });
+
+  $('#cola').innerHTML = vista.map(tarjetaCocina).join('');
+}
+
+function botonFiltro(id, txt, n) {
+  return '<button role="tab" data-filtro="' + id + '" aria-selected="' + (A.filtroCocina === id) + '">' +
+    txt + '<span class="n">' + n + '</span></button>';
+}
+
+function tiempoMedio(todas) {
+  var hechas = todas.filter(function (c) { return c.tsListo; });
+  if (!hechas.length) return '—';
+  var medio = Math.round(hechas.reduce(function (a, c) { return a + (c.tsListo - c.ts); }, 0) / hechas.length / 1000);
+  return mmss(medio);
+}
+
+function tarjetaCocina(c) {
+  var g = agrupar(c.items);
+  var obj = minutos(c.items) || 12;
+  var corriendo = !c.tsListo;
+  var seg = Math.floor(((c.tsListo || Date.now()) - c.ts) / 1000);
+  var late = corriendo && seg > obj * 60;
+
+  var p = Math.min(1, seg / (obj * 60));
+  var radio = 24, circ = 2 * Math.PI * radio;
+  var offset = circ * (1 - p);
+  var color = c.estado === 'listo' ? 'var(--ok)' : (late ? 'var(--hot)' : (p > .75 ? 'var(--hot)' : 'var(--gold)'));
+
+  var partidas = g.map(function (x) {
+    return '<div class="grupo-est">' +
+      '<div class="ge"><span>' + (CAT[x.cat] ? CAT[x.cat].tk : x.cat) + '</span><span>' + x.max + ' min</span></div>' +
+      x.items.map(function (l) {
+        var mods = modificaciones(l).filter(function (m) { return m !== 'Prioridad alta'; });
+        return '<div class="li"><b>' + l.qty + '</b><span>' + esc(l.nombre) + '</span></div>' +
+          (mods.length ? '<div class="mod">' + mods.map(function (m) {
+            return m.indexOf('Alergia') === 0 ? '<b>' + esc(m.toUpperCase()) + '</b>' : esc(m.toUpperCase());
+          }).join('<br>') + '</div>' : '') +
+          (l.nota ? '<div class="mod nota">“' + esc(l.nota) + '”</div>' : '');
+      }).join('') +
+    '</div>';
+  }).join('');
+
+  var rotulo = { nueva: 'nueva', fuego: 'en fuego', listo: 'lista' }[c.estado] || c.estado;
+  var acciones =
+    (c.estado === 'nueva' ? '<button class="btn mini oro" data-acc="tomar" data-folio="' + c.folio + '">Tomar comanda</button>' : '') +
+    (c.estado === 'fuego' ? '<button class="btn mini oro" data-acc="listo" data-folio="' + c.folio + '">Marcar lista</button>' : '') +
+    '<button class="btn mini tenue" data-acc="ticket" data-folio="' + c.folio + '">' + icono('ticket') + 'Ticket</button>';
+
+  return '<article class="tk ' + (late ? 'late' : '') + '" data-est="' + c.estado + '" data-folio="' + c.folio + '" data-ts="' + c.ts + '" data-fin="' + (c.tsListo || '') + '" data-obj="' + obj + '">' +
+    '<div class="cab">' +
+      '<div><div class="folio">' + c.folio + '</div>' +
+        '<div class="meta"><span class="mesa-tag">mesa ' + dos(c.mesa) + '</span><span class="punto"></span><span>' + c.comensales + ' pax</span><span class="punto"></span><span>' + esc(c.mesero) + '</span></div>' +
+        '<div style="margin-top:8px"><span class="estado">' + rotulo + '</span></div>' +
+      '</div>' +
+      '<div class="reloj"><svg viewBox="0 0 56 56" width="56" height="56" aria-hidden="true">' +
+        '<circle class="pista" cx="28" cy="28" r="' + radio + '"/>' +
+        '<circle class="arco" cx="28" cy="28" r="' + radio + '" stroke="' + color + '" stroke-dasharray="' + circ.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"/>' +
+      '</svg><span class="t">' + mmss(seg) + '</span></div>' +
+    '</div>' +
+    '<div class="partidas">' + partidas + '</div>' +
+    '<div class="acciones">' + acciones + '</div>' +
+  '</article>';
+}
+
+/* ============================================================
+   Catálogo
+   ============================================================ */
+function dibujarCatalogo() {
+  $('#cat-nota').textContent = A.carta.length + ' productos';
+  $('#catalogo').innerHTML = ORDEN_CAT.map(function (c) {
+    var lista = A.carta.filter(function (p) { return p.c === c; });
+    if (!lista.length) return '';
+    return '<section class="cat-grupo">' +
+      '<div class="cab"><h3>' + CAT[c].n + '</h3><span class="pase">' + CAT[c].tk + '</span><span class="regla"></span></div>' +
+      '<div class="cat-platos">' + lista.map(function (p) {
+        return '<article class="cat-plato">' +
+          '<div class="fila1"><span class="n">' + esc(p.n) + '</span><span class="p">' + dinero(p.p) + '</span></div>' +
+          (p.d ? '<p class="d">' + esc(p.d) + '</p>' : '') +
+          '<div class="m"><span class="t">' + p.m + ' min</span>' +
+            (p.veg ? '<span class="tag veg">veg</span>' : '') +
+            (p.term ? '<span class="tag">término</span>' : '') +
+            p.op.map(function (o) { return '<span class="tag">' + esc(o) + '</span>'; }).join('') +
+          '</div>' +
+        '</article>';
+      }).join('') + '</div></section>';
+  }).join('');
+}
+
+/* ============================================================
+   Render global
+   ============================================================ */
+function dibujar() {
+  document.body.dataset.vista = A.vista;
+  $$('.rail .v').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.vista === A.vista)); });
+  $$('.vista').forEach(function (v) { v.classList.toggle('on', v.id === 'v-' + A.vista); });
+
+  $('#piso').hidden = A.salon !== 'piso';
+  $('#menu').hidden = A.salon !== 'menu';
+
+  dibujarCabecera();
+  if (A.vista === 'sala') {
+    if (A.salon === 'piso') dibujarPiso();
+    else { dibujarChips(); dibujarPlatos(); }
+  }
+  if (A.vista === 'cocina') dibujarCocina();
+  if (A.vista === 'carta') dibujarCatalogo();
+  dibujarPanel();
+}
+
+/* ============================================================
+   Acciones
+   ============================================================ */
+function elegirMesa(n) {
+  if (A.mesa !== n) {
+    if (A.mesa) A.borradores[A.mesa] = A.carrito;
+    A.mesa = n;
+    A.carrito = (A.borradores[n] || []).slice();
+    var cs = comandasDeMesa(n);
+    if (cs.length && cs[0].comensales) A.pax = cs[0].comensales;
+  }
+  A.salon = 'menu';
+  A.busqueda = '';
+  $('#buscar').value = '';
+  dibujar();
+  $('#scroll').scrollTop = 0;
+}
+
+function irAPiso() {
+  if (A.mesa) A.borradores[A.mesa] = A.carrito;
+  A.salon = 'piso';
+  dibujar();
+}
+
+function agregar(id) {
+  if (!A.mesa) { toast('Elige primero una mesa'); return; }
+  var igual = null;
+  A.carrito.forEach(function (l) {
+    if (l.id === id && !l.termino && !(l.op || []).length && !l.nota && !l.alergia && !l.urgente) igual = l;
+  });
+  if (igual) igual.qty++;
+  else A.carrito.push({ uid: uid(), id: id, qty: 1, termino: null, op: [], nota: '', alergia: '', comensal: null, urgente: false });
+  dibujarPlatos();
+  dibujarPanel();
+}
+
+function lineaActual() {
+  var l = null;
+  A.carrito.forEach(function (x) { if (x.uid === A.editando) l = x; });
+  return l;
+}
+
+function abrirEditor(uidLinea) {
+  var l = null;
+  A.carrito.forEach(function (x) { if (x.uid === uidLinea) l = x; });
+  if (!l) return;
+  A.editando = uidLinea;
+  var p = A.porId[l.id];
+
+  var chipsTerm = p.term ? '<div class="grupo"><span class="l">Término</span><div class="opciones">' +
+    TERMINOS.map(function (t) {
+      return '<button class="op" data-opt="term" data-v="' + esc(t) + '" aria-pressed="' + (l.termino === t) + '">' + icono('check') + esc(t) + '</button>';
+    }).join('') + '</div></div>' : '';
+
+  var chipsOp = p.op.length ? '<div class="grupo"><span class="l">Modificaciones</span><div class="opciones">' +
+    p.op.map(function (o) {
+      return '<button class="op" data-opt="op" data-v="' + esc(o) + '" aria-pressed="' + ((l.op || []).indexOf(o) >= 0) + '">' + icono('check') + esc(o) + '</button>';
+    }).join('') + '</div></div>' : '';
+
+  var opcionesAl = ALERGIAS.map(function (a) {
+    return '<option value="' + esc(a) + '"' + (l.alergia === a ? ' selected' : '') + '>' + (a || 'Sin alergia') + '</option>';
+  }).join('');
+
+  var opcionesCom = '<option value="">Sin asignar</option>' +
+    Array.from({ length: A.pax }, function (_, i) { return i + 1; }).map(function (i) {
+      return '<option value="' + i + '"' + (l.comensal == i ? ' selected' : '') + '>Comensal ' + i + '</option>';
+    }).join('');
+
+  $('#capa-hijo').innerHTML = '<div class="hoja">' +
+    '<div class="cab"><div><h2>' + esc(p.n) + '</h2>' +
+      '<div class="sub">' + CAT[p.c].tk + ' · ' + p.m + ' min · ' + dinero(p.p) + '</div></div>' +
+      '<button class="cerrar" data-acc="cerrar" aria-label="Cerrar">' + icono('x') + '</button></div>' +
+    '<div class="cuerpo">' +
+      chipsTerm + chipsOp +
+      '<div class="grupo doble">' +
+        '<div><span class="l">Alergia</span><select class="sel" data-sel="alergia">' + opcionesAl + '</select></div>' +
+        '<div><span class="l">Comensal</span><select class="sel" data-sel="comensal">' + opcionesCom + '</select></div>' +
+      '</div>' +
+      '<div class="grupo"><span class="l">Nota para cocina</span>' +
+        '<textarea class="nota" id="nota-linea" placeholder="Sin cebollín, salsa aparte, bien caliente…">' + esc(l.nota || '') + '</textarea></div>' +
+      '<div class="grupo"><span class="l">Cantidad</span>' +
+        '<div class="cantidad"><div class="ctrl">' +
+          '<button data-acc="qty" data-d="-1" aria-label="Menos">' + icono('menos') + '</button>' +
+          '<span>' + l.qty + '</span>' +
+          '<button data-acc="qty" data-d="1" aria-label="Más">' + icono('mas') + '</button>' +
+        '</div>' +
+        '<button class="op" data-opt="urgente" aria-pressed="' + (!!l.urgente) + '">' + icono('check') + 'Prioridad alta</button>' +
+        '<button class="quitar" data-acc="eliminar">Quitar</button></div></div>' +
+    '</div>' +
+    '<div class="pie"><button class="btn oro" data-acc="cerrar">Listo</button></div>' +
+  '</div>';
+  $('#capa').classList.add('on');
+}
+
+function cerrarCapa() {
+  A.editando = null;
+  A.ticket = null;
+  $('#capa').classList.remove('on');
+  $('#capa-hijo').innerHTML = '';
+}
+
+function guardarNota() {
+  var l = lineaActual();
+  var n = $('#nota-linea');
+  if (l && n) l.nota = n.value;
+}
+
+function mandarComanda() {
+  if (!A.mesa || !A.carrito.length) return;
+  var btn = $('#btn-mandar');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  var items = A.carrito.map(function (l) {
+    var p = A.porId[l.id];
+    return {
+      id: l.id, nombre: p.n, categoria: p.c, precio: p.p, minutos: p.m,
+      qty: l.qty, termino: l.termino, op: l.op, nota: l.nota,
+      alergia: l.alergia, comensal: l.comensal, urgente: l.urgente
+    };
+  });
+
+  llamar('mandar', { mesa: A.mesa, comensales: A.pax, mesero: A.mesero || A.meseros[0], items: items })
+    .then(function (res) {
+      var comanda = {
+        folio: res.folio, ts: res.ts, mesa: A.mesa, comensales: A.pax,
+        mesero: A.mesero || A.meseros[0], items: items, estado: 'nueva', tsListo: null, total: res.total
+      };
+      A.comandas.push(comanda);
+      A.carrito = [];
+      A.borradores[A.mesa] = [];
+      document.body.classList.remove('carrito');
+      dibujar();
+      mostrarTicket(comanda);
+      toast('Comanda ' + res.folio + ' enviada a cocina');
+    })
+    .catch(function (e) {
+      toast('No se pudo enviar: ' + e.message);
+    })
+    .then(function () {
+      btn.disabled = !(A.mesa && A.carrito.length);
+      btn.textContent = 'Mandar a cocina';
+    });
+}
+
+/* ============================================================
+   Ticket
+   ============================================================ */
+function mostrarTicket(c) {
+  A.ticket = c.folio;
+  htmlTicket(c);
+  $('#capa').classList.add('on');
+}
+
+function htmlTicket(c) {
+  var g = agrupar(c.items);
+  var obj = minutos(c.items);
+  var totalC = c.items.reduce(function (a, l) { return a + l.precio * l.qty; }, 0);
+  var urgente = c.items.some(function (l) { return l.urgente; });
+  var partes = c.items.reduce(function (a, l) { return a + l.qty; }, 0);
+  var salida = new Date(c.ts + obj * 60000);
+
+  var bloques = g.map(function (x) {
+    return '<div class="tk-est">' +
+      '<div class="cab"><span>' + (CAT[x.cat] ? CAT[x.cat].tk : x.cat) + '</span><span>≈ ' + x.max + ' min</span></div>' +
+      x.items.map(function (l) {
+        var mods = modificaciones(l).filter(function (m) { return m !== 'Prioridad alta'; });
+        return '<div class="tk-li"><span class="c">' + l.qty + '</span><span class="p">' + esc(l.nombre) + '</span><span class="t">' + l.minutos + "'</span></div>" +
+          (mods.length ? '<div class="tk-mod">' + mods.map(function (m) {
+            return m.indexOf('Alergia') === 0 ? '<span class="al">!! ' + esc(m.toUpperCase()) + '</span>' : esc(m.toUpperCase());
+          }).join('<br>') + '</div>' : '') +
+          (l.nota ? '<div class="tk-nota">' + esc(l.nota) + '</div>' : '');
+      }).join('') +
+    '</div>';
+  }).join('');
+
+  $('#capa-hijo').innerHTML = '<div class="modal-ticket"><div class="hoja"><div class="cuerpo">' +
+    '<div class="ticket">' +
+      '<div class="tk-cab"><span class="marca">KŌJI</span><span class="tipo">' + (urgente ? 'urgente' : 'comanda de cocina') + '</span></div>' +
+      '<div class="tk-cuerpo">' +
+        '<div class="tk-folio"><b>' + c.folio + '</b><span>folio</span></div>' +
+        '<dl class="tk-datos">' +
+          '<dt>Mesa</dt><dd>' + dos(c.mesa) + ' · ' + c.comensales + ' pax</dd>' +
+          '<dt>Hora</dt><dd>' + hhmmss(c.ts) + '</dd>' +
+          '<dt>Mesero</dt><dd>' + esc(c.mesero) + '</dd>' +
+          '<dt>Partidas</dt><dd>' + partes + '</dd>' +
+        '</dl>' +
+        '<div class="tk-sep"></div>' +
+        bloques +
+        '<div class="tk-sep"></div>' +
+        '<dl class="tk-pie">' +
+          '<dt>Servicio</dt><dd>' + pasesDe(c.items) + (pasesDe(c.items) === 1 ? ' pase' : ' pases') + '</dd>' +
+          '<dt>Salida</dt><dd>' + hhmm(salida.getTime()) + '</dd>' +
+          '<dt>Total</dt><dd>' + dinero(totalC) + '</dd>' +
+        '</dl>' +
+        '<div class="sello-tk">Kōji<br>cocina<br>' + c.folio + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="acciones">' +
+      '<button class="btn oro" data-acc="imprimir">Imprimir 80 mm</button>' +
+      '<button class="btn" data-acc="ir-cocina">Ver en cocina</button>' +
+      '<button class="btn tenue" data-acc="cerrar">Cerrar</button>' +
+    '</div>' +
+  '</div></div></div>';
+}
+
+function imprimir() {
+  var c = null;
+  A.comandas.forEach(function (x) { if (x.folio === A.ticket) c = x; });
+  if (!c) return;
+  htmlTicket(c);
+  $('#print-root').innerHTML = $('#capa-hijo .ticket').outerHTML;
+  window.print();
+}
+
+/* ============================================================
+   Cocina · acciones
+   ============================================================ */
+function cargarCocina(silencioso) {
+  return llamar('comandasAbiertas').then(function (lista) {
+    var firma = JSON.stringify((lista || []).map(function (c) { return [c.folio, c.estado, c.tsListo || 0]; }));
+    if (silencioso && firma === A._firma) return;
+    A._firma = firma;
+    A.comandas = (lista || []).map(function (c) {
+      if (typeof c.ts === 'string') c.ts = Number(c.ts);
+      if (c.tsListo && typeof c.tsListo === 'string') c.tsListo = Number(c.tsListo);
+      return c;
+    });
+    dibujarCocina();
+    dibujarCabecera();
+  });
+}
+
+function tomar(folio) {
+  var c = A.comandas.filter(function (x) { return x.folio === folio; })[0];
+  var antes = c ? c.estado : null;
+  if (c) c.estado = 'fuego';
+  dibujarCocina();
+  llamar('cambiarEstado', [folio, 'fuego']).catch(function (e) {
+    if (c) c.estado = antes;
+    dibujarCocina();
+    toast('No se pudo tomar: ' + e.message);
+  });
+}
+
+function marcarListo(folio) {
+  var c = A.comandas.filter(function (x) { return x.folio === folio; })[0];
+  var antes = c ? { estado: c.estado, tsListo: c.tsListo } : null;
+  if (c) { c.estado = 'listo'; c.tsListo = Date.now(); }
+  dibujarCocina();
+  llamar('cambiarEstado', [folio, 'listo']).catch(function (e) {
+    if (c && antes) { c.estado = antes.estado; c.tsListo = antes.tsListo; }
+    dibujarCocina();
+    toast('No se pudo marcar lista: ' + e.message);
+  });
+}
+
+/* ============================================================
+   Eventos
+   ============================================================ */
+document.addEventListener('click', function (e) {
+  var el = e.target.closest('[data-vista],[data-mesa],[data-add],[data-cat],[data-editar],[data-opt],[data-acc],[data-filtro]');
+  if (!el) {
+    if (e.target.id === 'capa') cerrarCapa();
+    return;
+  }
+
+  if (el.dataset.vista) {
+    A.vista = el.dataset.vista;
+    document.body.classList.remove('carrito');
+    dibujar();
+    if (A.vista === 'cocina') cargarCocina();
+    return;
+  }
+  if (el.dataset.filtro) { A.filtroCocina = el.dataset.filtro; dibujarCocina(); return; }
+  if (el.dataset.mesa) { elegirMesa(Number(el.dataset.mesa)); return; }
+  if (el.dataset.add) { agregar(el.dataset.add); return; }
+  if (el.dataset.cat) { A.categoria = el.dataset.cat; A.busqueda = ''; $('#buscar').value = ''; dibujarChips(); dibujarPlatos(); return; }
+  if (el.dataset.editar) { abrirEditor(el.dataset.editar); return; }
+
+  if (el.dataset.opt) {
+    var l = lineaActual();
+    if (!l) return;
+    var tipo = el.dataset.opt, v = el.dataset.v;
+    guardarNota();
+    if (tipo === 'term') l.termino = (l.termino === v) ? null : v;
+    if (tipo === 'urgente') l.urgente = !l.urgente;
+    if (tipo === 'op') {
+      l.op = l.op || [];
+      var i = l.op.indexOf(v);
+      if (i >= 0) l.op.splice(i, 1); else l.op.push(v);
+    }
+    abrirEditor(l.uid);
+    dibujarPanel();
+    return;
+  }
+
+  var acc = el.dataset.acc;
+  if (acc === 'volver') { irAPiso(); return; }
+  if (acc === 'pax') { A.pax = Math.max(1, Math.min(24, A.pax + Number(el.dataset.d))); dibujarPanel(); return; }
+  if (acc === 'abrir-panel') { document.body.classList.add('carrito'); return; }
+  if (acc === 'cerrar-panel') { document.body.classList.remove('carrito'); return; }
+  if (acc === 'mandar') { mandarComanda(); return; }
+  if (acc === 'cerrar') { cerrarCapa(); return; }
+  if (acc === 'qty') {
+    var lin = lineaActual();
+    if (!lin) return;
+    lin.qty = Math.max(1, Math.min(99, lin.qty + Number(el.dataset.d)));
+    guardarNota();
+    abrirEditor(lin.uid);
+    dibujarPanel();
+    return;
+  }
+  if (acc === 'eliminar') {
+    var lin2 = lineaActual();
+    if (lin2) A.carrito = A.carrito.filter(function (x) { return x !== lin2; });
+    cerrarCapa();
+    dibujar();
+    return;
+  }
+  if (acc === 'tomar') { tomar(el.dataset.folio); return; }
+  if (acc === 'listo') { marcarListo(el.dataset.folio); return; }
+  if (acc === 'ticket') {
+    var c = A.comandas.filter(function (x) { return x.folio === el.dataset.folio; })[0];
+    if (c) mostrarTicket(c);
+    return;
+  }
+  if (acc === 'imprimir') { imprimir(); return; }
+  if (acc === 'ir-cocina') { cerrarCapa(); A.vista = 'cocina'; dibujar(); cargarCocina(); return; }
+  if (acc === 'cobrar') {
+    if (!A.mesa) return;
+    var mesa = A.mesa;
+    llamar('cerrarMesa', mesa).then(function () {
+      return llamar('comandasAbiertas');
+    }).then(function (lista) {
+      A.comandas = lista || [];
+      A.borradores[mesa] = [];
+      if (A.mesa === mesa) A.carrito = [];
+      dibujar();
+      toast('Mesa ' + dos(mesa) + ' cerrada');
+    }).catch(function (e) { toast('Error al cobrar: ' + e.message); });
+    return;
+  }
+});
+
+document.addEventListener('change', function (e) {
+  var sel = e.target.closest('[data-sel]');
+  if (!sel) return;
+  var l = lineaActual();
+  if (!l) return;
+  if (sel.dataset.sel === 'alergia') l.alergia = sel.value;
+  if (sel.dataset.sel === 'comensal') l.comensal = sel.value ? Number(sel.value) : null;
+  dibujarPanel();
+});
+
+document.addEventListener('input', function (e) {
+  if (e.target.id === 'nota-linea') { guardarNota(); return; }
+  if (e.target.id === 'buscar') {
+    A.busqueda = e.target.value;
+    dibujarPlatos();
+  }
+});
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') {
+    if ($('#capa').classList.contains('on')) cerrarCapa();
+    else if (document.body.classList.contains('carrito')) document.body.classList.remove('carrito');
+  }
+});
+
+$('#mesero').addEventListener('change', function () {
+  A.mesero = this.value;
+  dibujarCabecera();
+});
+
+/* ============================================================
+   Reloj, cronómetros y refresco
+   ============================================================ */
+setInterval(function () {
+  var ahora = hhmmss(Date.now());
+  $('#reloj').textContent = ahora.slice(0, 5);
+  var rc = $('#reloj-cocina');
+  if (rc) rc.textContent = ahora;
+
+  $$('.tk[data-ts]').forEach(function (tarj) {
+    var ts = Number(tarj.dataset.ts);
+    var fin = tarj.dataset.fin ? Number(tarj.dataset.fin) : 0;
+    var obj = Number(tarj.dataset.obj) || 12;
+    var seg = Math.floor(((fin || Date.now()) - ts) / 1000);
+    var t = tarj.querySelector('.reloj .t');
+    if (t) t.textContent = mmss(seg);
+    var arco = tarj.querySelector('.reloj .arco');
+    if (arco && !fin) {
+      var p = Math.min(1, seg / (obj * 60));
+      var radio = 24, circ = 2 * Math.PI * radio;
+      arco.setAttribute('stroke-dashoffset', (circ * (1 - p)).toFixed(1));
+      tarj.classList.toggle('late', seg > obj * 60);
+    }
+  });
+}, 1000);
+
+/* refresco suave de cocina */
+setInterval(function () {
+  if (A.vista !== 'cocina') return;
+  if ($('#capa').classList.contains('on')) return;
+  cargarCocina(true);
+}, 25000);
+
+/* ============================================================
+   Arranque
+   ============================================================ */
+llamar('arranque').then(function (datos) {
+  A.carta = datos.carta || [];
+  A.meseros = datos.meseros || [];
+  A.comandas = (datos.comandas || []).map(function (c) {
+    if (typeof c.ts === 'string') c.ts = Number(c.ts);
+    if (c.tsListo && typeof c.tsListo === 'string') c.tsListo = Number(c.tsListo);
+    return c;
+  });
+  A.porId = {};
+  A.carta.forEach(function (p) { A.porId[p.id] = p; });
+  A.mesero = A.meseros[0] || '';
+  $('#mesero').innerHTML = A.meseros.map(function (m) {
+    return '<option value="' + esc(m) + '">' + esc(m) + '</option>';
+  }).join('');
+  $('#cargando').style.display = 'none';
+  dibujar();
+}).catch(function (e) {
+  $('#cargando').innerHTML = '<p style="max-width:440px;text-align:center;line-height:1.7;font-family:var(--sans);font-size:13px;letter-spacing:0;text-transform:none;color:var(--text-2)">' +
+    'No se pudo cargar la carta.<br><br>' + esc(e.message) + '</p>';
+});
+</script>
+</body>
+</html>

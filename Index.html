@@ -425,7 +425,7 @@ textarea.nota:focus{border-color:var(--ink)}
       <div id="catalogo"></div>
       <div style="margin-top:28px;padding-top:16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <button class="btn mini" data-acc="reiniciar">Nuevo turno</button>
-        <span style="font-size:11px;color:var(--mute)">Borra las comandas abiertas y reinicia el folio.</span>
+        <span id="reiniciar-conf" style="font-size:11px;color:var(--mute)">Borra las comandas abiertas y reinicia el folio.</span>
       </div>
     </div>
   </section>
@@ -1112,7 +1112,17 @@ document.addEventListener('click', function (e) {
   }
   if (acc === 'imprimir') { imprimir(); return; }
   if (acc === 'reiniciar') {
-    if (!confirm('¿Reiniciar el turno? Se borran todas las comandas abiertas.')) return;
+    var abiertas = A.comandas.length;
+    $('#reiniciar-conf').innerHTML = '¿Borrar ' + abiertas + ' comanda' + (abiertas === 1 ? '' : 's') + ' abierta' + (abiertas === 1 ? '' : 's') + '? ' +
+      '<button class="btn mini" data-acc="reiniciar-si" style="margin-left:8px">Sí, borrar</button> ' +
+      '<button class="btn mini" data-acc="reiniciar-no" style="margin-left:6px">Cancelar</button>';
+    return;
+  }
+  if (acc === 'reiniciar-no') {
+    $('#reiniciar-conf').textContent = 'Borra las comandas abiertas y reinicia el folio.';
+    return;
+  }
+  if (acc === 'reiniciar-si') {
     llamar('reiniciarTurno').then(function () {
       A.comandas = [];
       A.borradores = {};
@@ -1120,6 +1130,7 @@ document.addEventListener('click', function (e) {
       A.mesa = null;
       dibujar();
       aviso('Turno reiniciado');
+      $('#reiniciar-conf').textContent = 'Borra las comandas abiertas y reinicia el folio.';
     }).catch(function (e) { aviso('Error: ' + e.message); });
     return;
   }
